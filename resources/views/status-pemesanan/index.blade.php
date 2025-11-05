@@ -1,0 +1,10 @@
+@extends('fe.master')
+@section('navbar')
+    @include('fe.navbar')
+@endsection
+@section('status-pemesanan')
+    @include('fe.status-pemesanan')
+@endsection
+@section('footer')
+    @include('fe.footer') 
+@endsection

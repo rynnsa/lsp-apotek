@@ -1,0 +1,10 @@
+@extends('fe.master')
+@section('navbar')
+    @include('fe.navbar')    
+@endsection
+@section('profile-pelanggan')
+    @include('fe.profile-pelanggan')
+@endsection
+@section('footer')
+    @include('fe.footer')    
+@endsection
