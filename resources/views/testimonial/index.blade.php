@@ -1,3 +1,10 @@
-@extends('fe.testimonial')
-    @section('')
+@extends('fe.master')
+@section('navbar')
+    @include('fe.navbar')
+@endsection
+@section('testimonial')
+    @include('fe.testimonial')
+@endsection
+@section('footer')
+    @include('fe.footer')
 @endsection

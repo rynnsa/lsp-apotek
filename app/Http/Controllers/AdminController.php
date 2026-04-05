@@ -26,7 +26,7 @@ class AdminController extends Controller
             'total_customers' => Pelanggan::count()
         ];
 
-        return view('dashboard.index', [
+        return view('be.landing', [
             'title' => 'Dashmin LifeCareYou',
             'stats' => $stats
         ]);

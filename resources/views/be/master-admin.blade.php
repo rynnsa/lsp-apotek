@@ -12,7 +12,7 @@
       <![endif]-->
       <!-- Meta -->
 
-                <meta name="csrf-token" content="{{ csrf_token() }}">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
       <meta charset="utf-8">
@@ -24,7 +24,7 @@
       <!-- Favicon icon -->
       {{-- <link rel="icon" href="{{asset ('be/img/favicon.ico') }}" type="image/x-icon"> --}}
       <!-- Google font-->
-      <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
       <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
       <!-- Required Fremwork -->
@@ -49,6 +49,22 @@
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>      
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+      <style>
+          body {
+              font-family: 'Poppins', sans-serif !important;
+          }
+          h1, h2, h3, h4, h5, h6 {
+              font-family: 'Poppins', sans-serif !important;
+          }
+          /* Center all modals vertically */
+          .modal {
+              align-items: center;
+          }
+          .modal-dialog {
+              margin: auto;
+          }
+      </style>
 
 
   </head>

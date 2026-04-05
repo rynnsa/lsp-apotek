@@ -8,6 +8,6 @@ class TestimonialController extends Controller
 {
     public function index()
     {
-        return view('fe.testimonial', ['title' => 'Penilaian - LifeCareYou']);
+        return view('testimonial.index', ['title' => 'Penilaian - LifeCareYou']);
     }
 }

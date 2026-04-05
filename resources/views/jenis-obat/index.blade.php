@@ -3,9 +3,6 @@
     @include('be.sidebar')
 @endsection
 @section('content')
-@extends('be.layouts.main')
-
-@section('content')
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
         <div class="main-body">
@@ -29,6 +26,7 @@
                                         <th>Jenis</th>
                                         <th>Deskripsi</th>
                                         <th></th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -41,14 +39,14 @@
                                                 </div>
                                             </td>
                                             <td class="align-middle">{{$jenisobat->jenis}}</td>
-                                            <td class="align-middle" style="max-width: 250px; white-space: normal; word-wrap: break-word;">{{$jenisobat->deskripsi_jenis}}</td>
-                                            <td class="align-middle">
+                                            <td class="align-middle" style="max -width: 250px; white-space: normal; word-wrap: break-word;">{{$jenisobat->deskripsi_jenis}}</td>
+                                            <td class="align-middle text-end">
                                                 <button class="btn btn-success btn-sm ti-pencil" data-bs-toggle="modal" data-bs-target="#editModal{{$jenisobat->id}}">
                                                 </button>
-                                                <form action="{{ route('jenisobat.destroy', $jenisobat->id) }}" method="POST" class="d-inline">
+                                                <form action="{{ route('jenis-obat.destroy', $jenisobat->id) }}" method="POST" class="delete-jenis-form d-inline" data-jenis-name="{{ $jenisobat->jenis }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm ti-trash" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">
+                                                    <button type="submit" class="btn btn-danger btn-sm ti-trash">
                                                     </button>
                                                 </form>
                                             </td>
@@ -56,7 +54,7 @@
 
                                         <!-- Edit Modal -->
                                         <div class="modal fade" id="editModal{{$jenisobat->id}}" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog">
+                                            <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title">Edit Jenis Obat</h5>
@@ -64,7 +62,7 @@
                                                             <i class="bi bi-x" style="font-size: 1.5rem;"></i>
                                                         </button>
                                                     </div>
-                                                    <form action="{{ route('jenisobat.update', $jenisobat->id) }}" method="POST" enctype="multipart/form-data">
+                                                    <form action="{{ route('jenis-obat.update', $jenisobat->id) }}" method="POST" enctype="multipart/form-data" class="edit-jenis-form" data-jenis-name="{{ $jenisobat->jenis }}">
                                                         @csrf
                                                         @method('PATCH')
                                                         <div class="modal-body">
@@ -108,11 +106,11 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="tambahUserModalLabel">Tambah Jenis Obat</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup" style="all: unset;">
-                    <i class="bi bi-x" style="font-size: 1.5rem;"></i>
+                    <i class="bi bi-x" style="font-size: 1.5rem;"></i> 
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{route('jenisobat.store')}}" method="POST" enctype="multipart/form-data">
+                <form action="{{route('jenis-obat.store')}}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Jenis Obat</label>
@@ -152,6 +150,48 @@
     </div>
 </div>
 
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 border border-danger">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup" style="all: unset;">
+                    <i class="bi bi-x" style="font-size: 1.5rem;"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus jenis obat <strong id="deleteTargetName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Hapus</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Edit Modal -->
+<div class="modal fade" id="confirmEditModal" tabindex="-1" aria-labelledby="confirmEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 border border-primary">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmEditModalLabel">Konfirmasi Edit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup" style="all: unset;">
+                    <i class="bi bi-x" style="font-size: 1.5rem;"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                Simpan perubahan untuk jenis obat <strong id="editTargetName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="confirmEditBtn">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     // Image preview functionality
     document.querySelectorAll('.img-thumbnail').forEach(image => {
@@ -164,29 +204,50 @@
         document.getElementById('previewImage').src = src;
     }
 
- // Search and filter functionality
-     document.addEventListener('DOMContentLoaded', function() {
-         const searchInput = document.getElementById('searchInput');
-         const filterJenis = document.getElementById('filterJenis');
-         const tableRows = document.querySelectorAll('tbody tr');
+    // Confirmation Modal for Delete and Edit
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.delete-jenis-form');
+        const editForms = document.querySelectorAll('.edit-jenis-form');
+        let currentDeleteForm = null;
+        let currentEditForm = null;
 
-         function filterTable() {
-             const searchTerm = searchInput.value.toLowerCase();
-             const selectedJenis = filterJenis.value.toLowerCase();
+        const confirmDeleteModalEl = document.getElementById('confirmDeleteModal');
+        const confirmEditModalEl = document.getElementById('confirmEditModal');
+        
+        const confirmDeleteModal = new bootstrap.Modal(confirmDeleteModalEl);
+        const confirmEditModal = new bootstrap.Modal(confirmEditModalEl);
 
-             tableRows.forEach(row => {
-                 const namaObat = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-                 const jenisObat = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-                
-                 const matchSearch = namaObat.includes(searchTerm);
-                 const matchJenis = selectedJenis === '' || jenisObat === selectedJenis;
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                currentDeleteForm = form;
+                const jenisName = form.dataset.jenisName || 'item ini';
+                document.getElementById('deleteTargetName').textContent = jenisName;
+                confirmDeleteModal.show();
+            });
+        });
 
-                 row.style.display = matchSearch && matchJenis ? '' : 'none';
-             });
-         }
+        editForms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                currentEditForm = form;
+                const jenisName = form.dataset.jenisName || 'item ini';
+                document.getElementById('editTargetName').textContent = jenisName;
+                confirmEditModal.show();
+            });
+        });
 
-         searchInput.addEventListener('input', filterTable);
-         filterJenis.addEventListener('change', filterTable);
-     }); 
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (currentDeleteForm) {
+                currentDeleteForm.submit();
+            }
+        });
+
+        document.getElementById('confirmEditBtn').addEventListener('click', function() {
+            if (currentEditForm) {
+                currentEditForm.submit();
+            }
+        });
+    });
 </script>
 @endsection

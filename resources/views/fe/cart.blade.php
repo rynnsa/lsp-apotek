@@ -184,38 +184,54 @@ function updateQuantity(obatId, quantity) {
 }
 
 function removeItem(obatId) {
-    if (confirm('Apakah Anda yakin ingin menghapus item ini dari keranjang?')) {
-        fetch('{{ route("cart.remove-item") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                obat_id: obatId
+    Swal.fire({
+        title: 'Hapus Item?',
+        html: '<span class="text-dark">Apakah Anda yakin ingin menghapus item ini dari keranjang?</span>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('{{ route("cart.remove-item") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    obat_id: obatId
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Remove row from table
-                const row = document.querySelector(`tr[data-id="${obatId}"]`);
-                if (row) {
-                    row.remove();
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove row from table
+                    const row = document.querySelector(`tr[data-id="${obatId}"]`);
+                    if (row) {
+                        row.remove();
+                    }
+                    
+                    // Check if cart is empty
+                    if (document.querySelectorAll('tbody tr').length <= 1) { // 1 for empty row
+                        window.location.reload();
+                    }
                 }
-                
-                // Check if cart is empty
-                if (document.querySelectorAll('tbody tr').length <= 1) { // 1 for empty row
-                    window.location.reload();
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat menghapus item');
-        });
-    }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan saat menghapus item',
+                    confirmButtonColor: '#dc3545'
+                });
+            });
+        }
+    });
 }
 
 function updateCheckoutSummary() {

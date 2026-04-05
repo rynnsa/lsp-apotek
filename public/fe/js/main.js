@@ -79,18 +79,15 @@
 
 
     // vegetable carousel
-    $(".vegetable-carousel").owlCarousel({
+    var vegetableCarousel = $(".vegetable-carousel");
+    vegetableCarousel.owlCarousel({
         autoplay: true,
         smartSpeed: 1500,
         center: false,
         dots: true,
         loop: true,
         margin: 25,
-        nav : true,
-        navText : [
-            '<i class="bi bi-arrow-left"></i>',
-            '<i class="bi bi-arrow-right"></i>'
-        ],
+        nav : false,
         responsiveClass: true,
         responsive: {
             0:{
@@ -110,6 +107,15 @@
             }
         }
     });
+
+    if ($('#trending-prev').length && $('#trending-next').length && vegetableCarousel.length) {
+        $('#trending-prev').on('click', function () {
+            vegetableCarousel.trigger('prev.owl.carousel');
+        });
+        $('#trending-next').on('click', function () {
+            vegetableCarousel.trigger('next.owl.carousel');
+        });
+    }
 
 
     // Modal Video

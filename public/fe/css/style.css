@@ -97,9 +97,10 @@
 
     /*** Topbar Start ***/
     .fixed-top {
-        transition: 0.5s;
-        background: var(--bs-white);
-        border: 0;
+        width: 100%;
+        left: 0;
+        top: 0;
+        z-index: 9999;
     }
 
     .topbar {
@@ -587,7 +588,7 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .half {
@@ -613,10 +614,10 @@ body, html {
 .form-block {
     background-color: white;
     padding: 30px 50px; /* kurangin padding atas-bawah, lebarin sisi kanan-kiri */
-    border-radius: 10px;
+    border-radius: 20px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 550px; /* tambah lebar form */
+    max-width: 400px; /* kurangi lebar form */
 }
 
 .form-block h3 {
@@ -635,11 +636,17 @@ body, html {
     width: 100%;
     padding: 12px;
     margin-bottom: 20px;
-    border: none;
-    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    background-color: transparent;
     border-radius: 5px;
     font-size: 14px;
     color: #666;
+}
+
+.form-block .form-control:focus {
+    background-color: rgba(0, 123, 255, 0.1);
+    border-color: #007bff;
+    outline: none;
 }
 
 .form-block .form-control::placeholder {
@@ -817,3 +824,19 @@ body, html {
     background-position: right 1.25rem center;
     padding-right: 2.5rem;
 }
+
+/* .navbar, .topbar {
+    font-family: 'Poppins', sans-serif;
+}
+
+.navbar a,
+.navbar span,
+.navbar small,
+.navbar h1 {
+    font-family: 'Poppins', sans-serif;
+}
+
+.navbar {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+} */

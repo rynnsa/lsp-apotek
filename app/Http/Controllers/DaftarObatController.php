@@ -121,7 +121,7 @@ class DaftarObatController extends Controller
            'deskripsi_jenis' => $request->deskripsi_jenis,
            'image_url' => $imagePath // Store only the path, not the full URL
        ]);
-       return redirect()->route('jenisobat')->with('success', 'Jenis Obat berhasil ditambahkan.');
+       return redirect()->route('jenis-obat')->with('success', 'Jenis Obat berhasil ditambahkan.');
    }
 
    public function updateJenis(Request $request, $id)
@@ -140,7 +140,7 @@ class DaftarObatController extends Controller
        }
        
        $jenisobat->update($data);
-       return redirect()->route('jenisobat')->with('success', 'Jenis Obat berhasil diperbarui.');
+       return redirect()->route('jenis-obat')->with('success', 'Jenis Obat berhasil diperbarui.');
    }
 
    public function destroyJenis($id)
@@ -150,7 +150,7 @@ class DaftarObatController extends Controller
            Storage::delete('public/' . $jenisobat->image_url);
        }
        $jenisobat->delete();
-       return redirect()->route('jenisobat')->with('success', 'Jenis Obat berhasil dihapus.');
+       return redirect()->route('jenis-obat')->with('success', 'Jenis Obat berhasil dihapus.');
    }
 
    public function updateHargaJual(Request $request, $id)

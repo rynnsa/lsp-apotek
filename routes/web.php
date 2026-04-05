@@ -66,24 +66,24 @@ Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])-
     // Admin and Pemilik only routes
     // Route::middleware(['jabatan:admin,pemilik'])->group(function () {
         Route::get('/kelola-pengguna', [App\Http\Controllers\KelolaPenggunaController::class, 'index'])->name('kelola-pengguna');
-        Route::post('/kelola-pengguna', [App\Http\Controllers\KelolaPenggunaController::class, 'store']);
-        Route::patch('/kelola-pengguna/{id}', [App\Http\Controllers\KelolaPenggunaController::class, 'update']);
-        Route::delete('/kelola-pengguna/{id}', [App\Http\Controllers\KelolaPenggunaController::class, 'destroy']);
+        Route::post('/kelola-pengguna', [App\Http\Controllers\KelolaPenggunaController::class, 'store'])->name('kelola-pengguna.store');
+        Route::patch('/kelola-pengguna/{id}', [App\Http\Controllers\KelolaPenggunaController::class, 'update'])->name('kelola-pengguna.update');
+        Route::delete('/kelola-pengguna/{id}', [App\Http\Controllers\KelolaPenggunaController::class, 'destroy'])->name('kelola-pengguna.destroy');
         Route::get('/data-pelanggan', [App\Http\Controllers\PelangganController::class, 'datapelanggan']);
     // });
 
     // Apoteker only routes
     // Route::middleware(['jabatan:apoteker'])->group(function () {
         Route::get('/obat', [App\Http\Controllers\DaftarObatController::class, 'index'])->name('obat');
-        Route::post('/obat', [App\Http\Controllers\DaftarObatController::class, 'obat']);
-        Route::patch('/obat/{id}', [App\Http\Controllers\DaftarObatController::class, 'updateObat']);
-        Route::delete('/obat/{id}', [App\Http\Controllers\DaftarObatController::class, 'destroyObat']);
-        Route::patch('/obat/update-harga/{id}', [App\Http\Controllers\DaftarObatController::class, 'updateHargaJual']);
+        Route::post('/obat', [App\Http\Controllers\DaftarObatController::class, 'obat'])->name('obat.store');
+        Route::patch('/obat/{id}', [App\Http\Controllers\DaftarObatController::class, 'updateObat'])->name('obat.update');
+        Route::delete('/obat/{id}', [App\Http\Controllers\DaftarObatController::class, 'destroyObat'])->name('obat.destroy');
+        Route::patch('/obat/update-harga/{id}', [App\Http\Controllers\DaftarObatController::class, 'updateHargaJual'])->name('obat.update-harga');
         
-        Route::get('/jenis-obat', [App\Http\Controllers\DaftarObatController::class, 'jenisobat'])->name('jenisobat');
-        Route::post('/jenis-obat', [App\Http\Controllers\DaftarObatController::class, 'jenis']);
-        Route::patch('/jenis-obat/{id}', [App\Http\Controllers\DaftarObatController::class, 'updateJenis']);
-        Route::delete('/jenis-obat/{id}', [App\Http\Controllers\DaftarObatController::class, 'destroyJenis']);
+        Route::get('/jenis-obat', [App\Http\Controllers\DaftarObatController::class, 'jenisobat'])->name('jenis-obat');
+        Route::post('/jenis-obat', [App\Http\Controllers\DaftarObatController::class, 'jenis'])->name('jenis-obat.store');
+        Route::patch('/jenis-obat/{id}', [App\Http\Controllers\DaftarObatController::class, 'updateJenis'])->name('jenis-obat.update');
+        Route::delete('/jenis-obat/{id}', [App\Http\Controllers\DaftarObatController::class, 'destroyJenis'])->name('jenis-obat.destroy');
 
         Route::get('/distributor', [App\Http\Controllers\DistributorController::class, 'index'])->name('distributor');
         Route::post('/distributor', [App\Http\Controllers\DistributorController::class, 'store'])->name('distributor.store');
@@ -124,6 +124,8 @@ Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])-
         Route::get('/penjualan', [App\Http\Controllers\PenjualanController::class, 'index'])->name('penjualan');
         Route::post('/penjualan/update-status/{id}', [App\Http\Controllers\PenjualanController::class, 'updateStatus']);
         Route::post('/cancel-order/{id}', [App\Http\Controllers\PenjualanController::class, 'cancelOrder'])->name('cancel-order');
+
+        Route::get('/keuangan', [App\Http\Controllers\AdminController::class, 'index'])->name('keuangan');
 
         Route::get('/sales/download-pdf', [App\Http\Controllers\AdminController::class, 'downloadSalesPDF'])->name('sales.download-pdf');
         Route::get('/purchases/download-pdf', [App\Http\Controllers\AdminController::class, 'downloadPurchasesPDF'])->name('purchases.download-pdf');

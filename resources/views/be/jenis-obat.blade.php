@@ -40,10 +40,10 @@
                                             <td class="align-middle">
                                                 <button class="btn btn-success btn-sm ti-pencil" data-bs-toggle="modal" data-bs-target="#editModal{{$jenisobat->id}}">
                                                 </button>
-                                                <form action="{{ route('jenisobat.destroy', $jenisobat->id) }}" method="POST" class="d-inline">
+                                                <form action="{{ route('jenisobat.destroy', $jenisobat->id) }}" method="POST" class="d-inline delete-form" data-item-name="{{ $jenisobat->jenis }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm ti-trash" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">
+                                                    <button type="submit" class="btn btn-danger btn-sm ti-trash">
                                                     </button>
                                                 </form>
                                             </td>
@@ -59,7 +59,7 @@
                                                             <i class="bi bi-x" style="font-size: 1.5rem;"></i>
                                                         </button>
                                                     </div>
-                                                    <form action="{{ route('jenisobat.update', $jenisobat->id) }}" method="POST" enctype="multipart/form-data">
+                                                    <form action="{{ route('jenis-obat.update', $jenisobat->id) }}" method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PATCH')
                                                         <div class="modal-body">
@@ -107,7 +107,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{route('jenisobat.store')}}" method="POST" enctype="multipart/form-data">
+                <form action="{{route('jenis-obat.store')}}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Jenis Obat</label>
@@ -158,6 +158,33 @@
     function showImage(src) {
         document.getElementById('previewImage').src = src;
     }
+
+    // SweetAlert2 Delete Confirmation
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.delete-form');
+        
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = this.getAttribute('data-item-name');
+                
+                Swal.fire({
+                    title: 'Hapus Data?',
+                    html: `<span class="text-dark">Apakah Anda yakin ingin menghapus jenis obat <strong>${itemName}</strong>?</span>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
+    });
 </script>
 
     {{-- // Search and filter functionality

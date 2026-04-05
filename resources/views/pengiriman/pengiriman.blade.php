@@ -87,10 +87,10 @@
                                             </button>
                                             <button class="btn btn-success btn-sm ti-pencil" data-bs-toggle="modal" data-bs-target="#editModal{{$pengiriman->id}}">
                                             </button>
-                                            <form action="{{ route('pengiriman.destroy', $pengiriman->id) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('pengiriman.destroy', $pengiriman->id) }}" method="POST" class="d-inline delete-form" data-item-name="{{ $pengiriman->nama_tujuan }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm ti-trash" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">
+                                                <button type="submit" class="btn btn-danger btn-sm ti-trash">
                                                 </button>
                                             </form>
                                         </td>
@@ -312,6 +312,33 @@
 
         searchInput.addEventListener('input', filterTable);
         filterStatus.addEventListener('change', filterTable);
+    });
+
+    // SweetAlert2 Delete Confirmation
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.delete-form');
+        
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = this.getAttribute('data-item-name');
+                
+                Swal.fire({
+                    title: 'Hapus Pengiriman?',
+                    html: `<span class="text-dark">Apakah Anda yakin ingin menghapus pengiriman ke <strong>${itemName}</strong>?</span>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
     });
 </script>
 

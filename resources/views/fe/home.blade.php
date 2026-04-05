@@ -4,10 +4,17 @@
                 <div class="row g-5 align-items-center">
                     <div class="col-md-12 col-lg-7">
                         <h4 class="mb-3 text-secondary">LifeCareYou - Apotek Masa Kini</h4>
-                        <h1 class="mb-5 display-3 text-primary">Temukan Solusi Kesehatan Terpercaya di LifeCareYou</h1>
-                        <div class="position-relative mx-auto">
-                            <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="number" placeholder="Search">
-                            <button type="submit" class="btn btn-primary border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100" style="top: 0; right: 25%;"><i class="fas fa-search" border-radius: 50px></i></button>
+                        <h1 class="mb-3 display-3 text-primary">Temukan Solusi Kesehatan Terpercaya di LifeCareYou</h1>
+                        <div class="d-flex gap-3 align-items-center justify-content-start">
+                            <a href="https://www.instagram.com/lifecareyou" target="_blank" class="btn btn-outline-warning rounded-circle p-3 bg-[#fbbd00]" style="border-width: 3px; border-color: #fbbd00;" title="Instagram">
+                                <i class="fab fa-instagram fa-lg" style="color: #fbbd00;"></i>
+                            </a>
+                            <a href="https://wa.me/+62" target="_blank" class="btn btn-outline-warning rounded-circle p-3 bg-white" style="border-width: 3px; border-color: #fbbd00;" title="WhatsApp">
+                                <i class="fab fa-whatsapp fa-lg" style="color: #fbbd00;"></i>
+                            </a>
+                            <a href="https://www.tiktok.com/lifecareyou" target="_blank" class="btn btn-outline-warning rounded-circle p-3 bg-white" style="border-width: 3px; border-color: #fbbd00;" title="TikTok">
+                                <i class="fab fa-tiktok fa-lg" style="color: #fbbd00;"></i>
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-12 col-lg-5">
@@ -51,6 +58,92 @@
         </div>
 
         <!-- Fruits Shop Start-->
+        <style>
+            .home-shop-card {
+                border: 1px solid #3b82f6;
+                border-radius: 1.5rem;
+                box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+                overflow: hidden;
+                transition: transform .3s ease, box-shadow .3s ease;
+                background: #ffffff;
+                min-height: 100%;
+            }
+            .home-shop-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 28px 65px rgba(15, 23, 42, 0.12);
+            }
+            .home-shop-card-img {
+                position: relative;
+                height: 220px;
+                overflow: hidden;
+            }
+            .home-shop-card-img img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform .4s ease;
+            }
+            .home-shop-card:hover .home-shop-card-img img {
+                transform: scale(1.05);
+            }
+            .home-shop-card-badge {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                background: rgba(59, 130, 246, 0.95);
+                color: #fff;
+                padding: .4rem .85rem;
+                font-size: .72rem;
+                border-radius: 999px;
+                text-transform: uppercase;
+            }
+            .home-shop-card-body {
+                padding: 1.4rem;
+            }
+            .home-shop-card-title {
+                font-size: 1.05rem;
+                font-weight: 700;
+                margin-bottom: .65rem;
+                color: black;
+            }
+            .home-shop-card-text {
+                color: #475569;
+                min-height: 3rem;
+                margin-bottom: 1rem;
+                line-height: 1.5;
+            }
+            .home-shop-card-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: .75rem;
+                flex-wrap: wrap;
+            }
+            .home-shop-price {
+                font-weight: 700;
+                color: #3b82f6;
+                margin-bottom: 0;
+            }
+            .home-shop-add-btn {
+                border-radius: 999px;
+                padding: .65rem 1.2rem;
+            }
+            .home-shop-carousel-item {
+                border: 1px solid #3b82f6;
+                border-radius: 1.5rem;
+                overflow: hidden;
+                background: #fff;
+                box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+                transition: transform .3s ease, box-shadow .3s ease;
+            }
+            .home-shop-carousel-item:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 24px 55px rgba(15, 23, 42, 0.1);
+            }
+            .home-shop-carousel-item:hover .home-shop-card-img img {
+                transform: scale(1.05);
+            }
+        </style>
         <div class="container-fluid fruite py-5">
             <div class="container py-5">
                 <div class="tab-class text-center">
@@ -79,38 +172,36 @@
                                         <div class="col-lg-12">
                                             <div class="row g-4">
                                                 <div class="col-lg-12">
-                                                    <div class="row g-4 justify-content-center">
+                                                    <div class="row g-4 justify-content-start">
                                                         @foreach ($obats as $obat)
                                                             @if ($obat->id_jenis == $jenis->id)
                                                             <div class="col-md-6 col-lg-4 col-xl-3">
-                                                                <div class="rounded position-relative fruite-item">
-                                                                    <div class="fruite-img" style="height: 200px; overflow: hidden; border-left: 1px solid #fbbd00; border-right: 1px solid #fbbd00; border-top: 1px solid #fbbd00;">
-                                                                        <img src="{{ asset('storage/' . $obat->foto1) }}" class="img-fluid w-100 rounded-top" alt="" style="object-fit: cover; height: 100%;">
+                                                                <div class="card home-shop-card">
+                                                                    <div class="home-shop-card-img">
+                                                                        <img src="{{ asset('storage/' . $obat->foto1) }}" class="img-fluid" alt="{{ $obat->nama_obat }}">
+                                                                        <div class="home-shop-card-badge">{{ $jenis->jenis }}</div>
                                                                     </div>
-                                                                    <div class="text-white bg-secondary px-3 py-1 position-absolute text-center" 
-                                                                        style="top: 1px; right: 0; left: 0; display: flex; justify-content: center; align-items: center; 
-                                                                        border-radius: 10px 10px 0px 0px; border: 1px solid #fbbd00;">
-                                                                        {{ $jenis->jenis }}
-                                                                    </div>
-                                                                    <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                                        <a href="{{ route('shop-detail', ['id' => $obat->id]) }}" class="text-decoration-none">
-                                                                            <h4>{{ $obat->nama_obat }}</h4>
-                                                                            <p>{{ Str::limit($obat->deskripsi_obat, 100) }}</p>
-                                                                        </a>
-                                                                        <div class="d-flex justify-content-between flex-lg-wrap">
-                                                                            <p class="text-dark fs-5 fw-bold mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
-                                                                            @auth('pelanggan')
-                                                                                <button class="btn border border-secondary rounded-pill px-3 text-primary btn-tambah" data-id="{{ $obat->id }}">
-                                                                                    <i class="fa fa-shopping-bag me-2 text-primary"></i> Tambah
-                                                                                </button>
-                                                                            @else
-                                                                                <button onclick="window.location.href='{{ route('login') }}'" class="btn border border-secondary rounded-pill px-3 text-primary">
-                                                                                    <i class="fa fa-shopping-bag me-2 text-primary"></i> Login
-                                                                                </button>
-                                                                            @endauth
+                                                                    <div class="card-body home-shop-card-body">
+                                                                        <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+                                                                            <div class="flex-grow-1">
+                                                                                <a href="{{ route('shop-detail', ['id' => $obat->id]) }}" class="text-decoration-none text-dark">
+                                                                                    <h4 class="home-shop-card-title mb-2 text-start">{{ $obat->nama_obat }}</h4>
+                                                                                </a>
+                                                                                <p class="home-shop-card-text mb-0 text-start">{{ Str::limit($obat->deskripsi_obat, 100) }}</p>
+                                                                            </div>
+                                                                            @guest('pelanggan')
+                                                                                <p class="home-shop-price mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
+                                                                            @endguest
                                                                         </div>
+                                                                        @auth('pelanggan')
+                                                                            <div class="home-shop-card-footer">
+                                                                                <p class="home-shop-price mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
+                                                                                <button class="btn btn-primary home-shop-add-btn btn-tambah" data-id="{{ $obat->id }}">
+                                                                                    <i class="fa fa-shopping-bag me-2"></i> Tambah
+                                                                                </button>
+                                                                            </div>
+                                                                        @endauth
                                                                     </div>
-                                                                    
                                                                 </div>
                                                             </div>
                                                             @endif
@@ -134,28 +225,44 @@
         <!-- Vesitable Shop Start-->
         <div class="container-fluid vesitable py-5">
             <div class="container py-5">
-                <h1 class="mb-0">Produk Terlaris</h1>
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-column flex-md-row gap-3">
+                    <h1 class="mb-0">Produk Terlaris</h1>
+                    <div class="d-flex gap-2" role="group" aria-label="Produk Terlaris navigation">
+                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" id="trending-prev">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" id="trending-next">
+                             <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="owl-carousel vegetable-carousel justify-content-center">
                     @foreach($obats as $obat)
-                    <div class="border border-primary rounded position-relative vesitable-item">
-                        <div class="vesitable-img" style="height: 200px; overflow: hidden; border-left: 1px solid #fbbd00; border-right: 1px solid #fbbd00; border-top: 1px solid #fbbd00;">
-                            <img src="{{ asset('storage/' . $obat->foto1) }}" class="img-fluid w-100 rounded-top" alt="" style="object-fit: cover; height: 100%;">
+                    <div class="home-shop-carousel-item">
+                        <div class="home-shop-card-img" style="height: 200px; overflow: hidden;">
+                            <img src="{{ asset('storage/' . $obat->foto1) }}" class="img-fluid" alt="{{ $obat->nama_obat }}">
+                            <div class="home-shop-card-badge">{{ $obat->jenis_obat->jenis }}</div>
                         </div>
-                        <div class="p-4 rounded-bottom border border-secondary border-top-0">
-                            <h4 style="height: 50px; overflow: hidden;">{{ $obat->nama_obat }}</h4>
-                            <p style="height: 50px; overflow: hidden;">{{ Str::limit($obat->deskripsi_obat, 100) }}</p>
-                            <div class="d-flex justify-content-between flex-lg-wrap">
-                                <p class="text-dark fs-5 fw-bold mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
-                                @auth('pelanggan')
-                                    <button onclick="tambah({{ $obat->id }})" class="btn border border-secondary rounded-pill px-3 text-primary">
-                                        <i class="fa fa-shopping-bag me-2 text-primary"></i> Tambah
-                                    </button>
-                                @else
-                                    <button onclick="window.location.href='{{ route('login') }}'" class="btn border border-secondary rounded-pill px-3 text-primary">
-                                        <i class="fa fa-shopping-bag me-2 text-primary"></i> Login
-                                    </button>
-                                @endauth
+                        <div class="p-4 rounded-bottom">
+                            <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+                                <div class="flex-grow-1">
+                                    <a href="{{ route('shop-detail', ['id' => $obat->id]) }}" class="text-decoration-none text-dark">
+                                        <h5 style="height: 50px; overflow: hidden; margin-bottom: 0.5rem;">{{ $obat->nama_obat }}</h5>
+                                    </a>
+                                    <p class="home-shop-card-text mb-0" style="text-align: left;">{{ Str::limit($obat->deskripsi_obat, 100) }}</p>
+                                </div>
+                                @guest('pelanggan')
+                                    <p class="text-dark fs-5 fw-bold mb-0 text-end">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
+                                @endguest
                             </div>
+                            @auth('pelanggan')
+                                <div class="d-flex justify-content-between flex-lg-wrap align-items-center gap-2">
+                                    <p class="text-dark fs-5 fw-bold mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
+                                    <button onclick="tambah({{ $obat->id }})" class="btn btn-primary rounded-pill px-3 home-shop-add-btn">
+                                        <i class="fa fa-shopping-bag me-2"></i> Tambah
+                                    </button>
+                                </div>
+                            @endauth
                         </div>
                     </div>
                     @endforeach
@@ -224,7 +331,7 @@
                     <div class="step-line d-none d-md-block"></div>
                 </div>
                 <div class="text-center mt-4 ">
-                    <a href="daftar.html" class="btn daftar-btn rounded-pill px-4 py-2 text-white shadow">Daftar Sekarang</a>
+                    <a href="login" class="btn daftar-btn rounded-pill px-4 py-2 text-white shadow">Pesan Sekarang</a>
                 </div>
             </div>
         </div>

@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{$title}}</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ ('fe/css/bootstrap.min.css') }}">
     <!-- Custom Style -->
     <link rel="stylesheet" href="{{ ('fe/css/style.css') }}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif !important;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif !important;
+        }
+    </style>
 </head>
 <body>
     <div class="half">
@@ -20,7 +28,8 @@
                     <div class="col-md-12">
                         <div class="form-block mx-auto">
                             <div class="text-center mb-5">
-                                <h3 class="text-uppercase"><strong>Masuk Dashmin</strong></h3>
+                                <h4 class="bold fw-bold">Masuk Dashmin</h4>
+                                <p class="text-muted small mb-4">Silahkan masuk untuk melanjutkan</p>
                                 @if($errors->any())
                                     <div class="alert alert-danger">
                                         <ul>
@@ -46,7 +55,7 @@
                                     <label class="control control--checkbox d-flex align-items-center mb-3 mb-sm-0">
                                         <input type="checkbox">
                                         <div class="control__indicator me-2"></div>
-                                        <span class="mb-0">Simpan Kata Sandi</span>
+                                        <span class="mb-0">Ingat Kata Sandi</span>
                                     </label>
                                     <span class="ms-auto"><a href="#" class="forgot-pass">Lupa Kata Sandi</a></span>
                                 </div>

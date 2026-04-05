@@ -8,6 +8,77 @@
 
 
         <!-- Fruits Shop Start-->
+        <style>
+            .shop-card {
+                border: 1px solid #3b82f6;
+                border-radius: 1.5rem;
+                box-shadow: 0 10px 20px rgba(24, 38, 71, 0.052);
+                overflow: hidden;
+                transition: transform .3s ease, box-shadow .3s ease;
+                background: #ffffff;
+            }
+            .shop-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+            }
+            .shop-card-img {
+                position: relative;
+                height: 260px;
+                overflow: hidden;
+            }
+            .shop-card-img img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform .4s ease;
+            }
+            .shop-card:hover .shop-card-img img {
+                transform: scale(1.05);
+            }
+            .shop-card-badge {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                background: rgba(52, 113, 255, 0.88);
+                color: #fff;
+                padding: .45rem .95rem;
+                font-size: .75rem;
+                letter-spacing: .05em;
+                border-radius: 999px;
+                text-transform: uppercase;
+            }
+            .shop-card-body {
+                padding: 1.4rem;
+            }
+            .shop-card-title {
+                font-size: 1.05rem;
+                font-weight: 700;
+                margin-bottom: .65rem;
+                color: black;
+            }
+            .shop-card-text {
+                color: #475569;
+                min-height: 3rem;
+                margin-bottom: 1rem;
+                line-height: 1.5;
+            }
+            .shop-card-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: .75rem;
+                flex-wrap: wrap;
+            }
+            .shop-price {
+                font-weight: 700;
+                color: #3b82f6;
+                margin-bottom: 0;
+            }
+            .shop-add-btn {
+                border-radius: 999px;
+                padding: .65rem 1.2rem;
+            }
+        </style>
         <div class="container-fluid fruite py-1">
             <div class="container py-5">
                 <div class="row g-4">
@@ -30,13 +101,13 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-lg-12">
+                                    {{-- <div class="col-lg-12">
                                         <div class="mb-3">
                                             <h4 class="mb-2">Price</h4>
                                             <input type="range" class="form-range w-100" id="rangeInput" name="rangeInput" min="0" max="500" value="0" oninput="amount.value=rangeInput.value">
                                             <output id="amount" name="amount" min-velue="0" max-value="500" for="rangeInput">0</output>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-lg-12">
                                         <div class="position-relative">
                                             <img src="{{asset ('fe/img/banner-fruits.jpg') }}" class="img-fluid w-100 rounded" alt="">
@@ -49,50 +120,46 @@
                             </div>
                             
                             <div class="col-lg-9">
-                                <div class="row g-4 justify-content-center">
-                                    @foreach($obats as $obat)
-                                    <div class="col-md-6 col-lg-6 col-xl-4">
-                                        <div class="rounded position-relative fruite-item">
-                                            <div class="fruite-img" style="height: 250px; overflow: hidden; border-left: 1px solid #fbbd00; border-right: 1px solid #fbbd00; border-top: 1px solid #fbbd00;">
-                                                <img src="{{ asset('storage/' . $obat->foto1) }}" class="img-fluid w-100 rounded-top" alt="" style="object-fit: cover; height: 100%;">
-                                            </div>
-                                            <div class="text-white bg-secondary px-3 py-1 position-absolute text-center" 
-                                            style="top: 1px; right: 0; left: 0; display: flex; justify-content: center; align-items: center; 
-                                            border-radius: 10px 10px 0px 0px; border: 1px solid #fbbd00;">
-                                                {{ $obat->jenis_obat->jenis }}
-                                            </div>
-                                            <div class="p-4 border border-secondary border-top-0 rounded-bottom" style="height: 180px;">
-                                                <a href="{{ route('shop-detail', ['id' => $obat->id]) }}" class="text-decoration-none">
-                                                    <h4 class="mb-1">{{ $obat->nama_obat }}</h4>
-                                                    <p style="height: 50px; overflow: hidden;" class="text-dark">{{ Str::limit($obat->deskripsi_obat, 100) }}</p>
-                                                </a>
-                                                <div class="d-flex justify-content-between flex-lg-wrap mt-auto">
-                                                    <p class="text-dark fs-5 fw-bold mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
+                                <div id="productList" class="row g-4 justify-content-start">
+                                    @forelse($obats as $obat)
+                                        <div class="col-md-6 col-lg-6 col-xl-4">
+                                            <div class="card shop-card">
+                                                <div class="shop-card-img">
+                                                    <img src="{{ asset('storage/' . $obat->foto1) }}" alt="{{ $obat->nama_obat }}">
+                                                    <div class="shop-card-badge">{{ $obat->jenis_obat->jenis }}</div>
+                                                </div>
+                                                <div class="card-body shop-card-body">
+                                                    <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+                                                        <a href="{{ route('shop-detail', ['id' => $obat->id]) }}" class="text-decoration-none text-dark flex-grow-1">
+                                                            <h4 class="shop-card-title mb-0">{{ $obat->nama_obat }}</h4>
+                                                        </a>
+                                                        @guest('pelanggan')
+                                                            <p class="shop-price mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
+                                                        @endguest
+                                                    </div>
+                                                    <p class="shop-card-text">{{ Str::limit($obat->deskripsi_obat, 100) }}</p>
                                                     @auth('pelanggan')
-                                                        <button onclick="tambahKeKeranjang(event, {{ $obat->id }})" class="btn border border-secondary rounded-pill px-3 text-primary">
-                                                            <i class="fa fa-shopping-bag me-2 text-primary"></i> Tambah
-                                                        </button>
-                                                    @else
-                                                        <button onclick="window.location.href='{{ route('login') }}'" class="btn border border-secondary rounded-pill px-3 text-primary">
-                                                            <i class="fa fa-shopping-bag me-2 text-primary"></i> Tambah
-                                                        </button>
+                                                        <div class="shop-card-footer">
+                                                            <p class="shop-price mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
+                                                            <button onclick="tambahKeKeranjang(event, {{ $obat->id }})" class="btn btn-primary shop-add-btn">
+                                                                <i class="fa fa-shopping-bag me-2"></i> Tambah
+                                                            </button>
+                                                        </div>
                                                     @endauth
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    @endforeach
-                                    <div class="col-12">
-                                        <div class="pagination d-flex justify-content-center mt-5">
-                                            <a href="#" class="rounded">&laquo;</a>
-                                            <a href="#" class="active rounded">1</a>
-                                            <a href="#" class="rounded">2</a>
-                                            <a href="#" class="rounded">3</a>
-                                            <a href="#" class="rounded">4</a>
-                                            <a href="#" class="rounded">5</a>
-                                            <a href="#" class="rounded">6</a>
-                                            <a href="#" class="rounded">&raquo;</a>
+                                    @empty
+                                        <div class="col-12">
+                                            <p class="text-muted">Produk tidak ditemukan.</p>
                                         </div>
+                                    @endforelse
+                                </div>
+                                <div class="col-12">
+                                    <div id="pagination-container" class="pagination d-flex justify-content-center mt-5">
+                                        <a href="#" class="rounded">&laquo;</a>
+                                        <a href="#" class="active rounded page-link" data-page="1">1</a>
+                                        <a href="#" class="rounded">&raquo;</a>
                                     </div>
                                 </div>
                             </div>
@@ -153,4 +220,63 @@ function updateCartCount(count) {
         el.style.display = count > 0 ? 'inline-block' : 'none';
     });
 }
+
+// Fungsi untuk cari dan filter produk
+function fetchShopProducts(page = 1) {
+    const searchInput = document.getElementById('searchInput');
+    const filterJenis = document.getElementById('filterJenis');
+    const productList = document.getElementById('productList');
+    const paginationContainer = document.getElementById('pagination-container');
+
+    const params = new URLSearchParams({
+        search: searchInput.value.trim(),
+        jenis: filterJenis.value,
+        page: page
+    });
+
+    fetch(`{{ route('search.obat') }}?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            productList.innerHTML = data.html;
+            paginationContainer.innerHTML = data.pagination;
+            
+            // Attach event listeners ke pagination links
+            document.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageNum = this.getAttribute('data-page');
+                    fetchShopProducts(pageNum);
+                    window.scrollTo(0, 0);
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Gagal memuat produk:', error);
+        });
+}
+
+const searchInput = document.getElementById('searchInput');
+const filterJenis = document.getElementById('filterJenis');
+let searchTimeout;
+
+if (searchInput) {
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => fetchShopProducts(1), 300);
+    });
+}
+
+if (filterJenis) {
+    filterJenis.addEventListener('change', () => fetchShopProducts(1));
+}
+
+// Attach event listeners ke pagination links pada halaman pertama load
+document.querySelectorAll('.page-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const pageNum = this.getAttribute('data-page');
+        fetchShopProducts(pageNum);
+        window.scrollTo(0, 0);
+    });
+});
 </script>

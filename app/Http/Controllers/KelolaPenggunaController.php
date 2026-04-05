@@ -10,7 +10,7 @@ class KelolaPenggunaController extends Controller
     public function index()
     {
        
-    $users = User::all(); // Ambil semua user dari database
+    $users = User::all(); 
     return view('kelola-pengguna.index', [
         'title' => 'Dashmin LifeCareYou',
         'users' => $users
@@ -20,8 +20,6 @@ class KelolaPenggunaController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        // Validate and store the user data
         $request->validate([
             'name' => 'required',
             'email' => 'required',
@@ -29,7 +27,6 @@ class KelolaPenggunaController extends Controller
             'password' => 'required'
         ]);
 
-        // Create the user
        User::create([
             'name' => $request->name,
             'email' => $request->email,

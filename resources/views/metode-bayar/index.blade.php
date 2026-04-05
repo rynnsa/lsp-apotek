@@ -45,10 +45,10 @@
                                                 <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{$metode_bayar->id}}">
                                                     <i class="ti-pencil"></i>
                                                 </button>
-                                                <form action="{{ route('metodebayar.destroy', $metode_bayar->id) }}" method="POST" class="d-inline">
+                                                <form action="{{ route('metodebayar.destroy', $metode_bayar->id) }}" method="POST" class="d-inline delete-form" data-item-name="{{ $metode_bayar->metode_pembayaran }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">
+                                                    <button type="submit" class="btn btn-danger btn-sm">
                                                         <i class="ti-trash"></i>
                                                     </button>
                                                 </form>
@@ -196,6 +196,33 @@
          searchInput.addEventListener('input', filterTable);
          filterJenis.addEventListener('change', filterTable);
      }); 
+
+    // SweetAlert2 Delete Confirmation
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.delete-form');
+        
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = this.getAttribute('data-item-name');
+                
+                Swal.fire({
+                    title: 'Hapus Metode Bayar?',
+                    html: `<span class="text-dark">Apakah Anda yakin ingin menghapus metode pembayaran <strong>${itemName}</strong>?</span>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
+    });
 
 </script>
 

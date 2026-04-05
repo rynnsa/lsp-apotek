@@ -1,6 +1,3 @@
-@extends('fe.master')
-@section('testimonial')
-
         <!-- Single Page Header start -->
         <div class="container-fluid page-header py-5">
             <h4 class="text-center text-white">Berbagi kisah dan pengalaman positif dari mereka yang telah mempercayai kami.</h4>
@@ -167,5 +164,3 @@
             </div>
         </div>
         <!-- Tastimonial End -->
-
-@endsection

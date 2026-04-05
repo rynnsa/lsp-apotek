@@ -4,67 +4,6 @@
             <div class="page-wrapper">
                 <div class="page-body">
                     <div class="row">
-                        <!-- Monthly Income Statistics Start -->
-                        <div class="col-lg-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="d-flex flex-column">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <h5 class="mb-0">Pendapatan</h5>
-                                            <a href="{{ route('income.download-pdf') }}?year={{ $year }}" 
-                                               class="btn btn-link p-0 text-primary" data-bs-toggle="tooltip" title="Unduh PDF">
-                                                <i class="fas fa-download"></i>
-                                            </a>
-                                        </div>
-                                        <select id="filtertahun" class="form-select form-control rounded-3 custom-select" style="width: 150px;" name="tahun" required>
-                                            <option value="2025">2025</option>
-                                            <option value="2024">2024</option>
-                                            <option value="2023">2023</option>
-                                            <option value="2022">2022</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="card-block">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Bulan</th>
-                                                    <th>Penjualan</th>
-                                                    <th>Pembelian</th>
-                                                    <th>Profit</th>
-                                                    <th>Perbandingan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($monthlyStats as $stat)
-                                                <tr class="bg-white">
-                                                    <td>{{ $stat['month'] }}</td>
-                                                    <td>
-                                                        {{ $stat['sales_count'] }} transaksi<br>
-                                                        <small>Rp {{ number_format($stat['sales_amount'], 0, ',', '.') }}</small>
-                                                    </td>
-                                                    <td>
-                                                        {{ $stat['purchase_count'] }} transaksi<br>
-                                                        <small>Rp {{ number_format($stat['purchase_amount'], 0, ',', '.') }}</small>
-                                                    </td>
-                                                    <td>Rp {{ number_format($stat['profit'], 0, ',', '.') }}</td>
-                                                    <td>
-                                                        <div class="progress bg-light" data-bs-toggle="tooltip" title="{{ $stat['percentage'] }}%">
-                                                            <div class="progress-bar {{ $stat['percentage'] > 0 ? 'bg-c-green' : 'bg-c-pink' }}" 
-                                                                 style="width:{{ abs($stat['percentage']) }}%"></div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Monthly Income Statistics End -->
-
                         <!-- Sales Statistics Start -->
                         <div class="col-lg-6">
                             <div class="card">
@@ -166,6 +105,66 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Monthly Income Statistics Start -->
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">Pendapatan</h5>
+                                            <a href="{{ route('income.download-pdf') }}?year={{ $year }}" 
+                                               class="btn btn-link p-0 text-primary" data-bs-toggle="tooltip" title="Unduh PDF">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </div>
+                                        <select id="filtertahun" class="form-select form-control rounded-3 custom-select" style="width: 150px;" name="tahun" required>
+                                            <option value="2025">2025</option>
+                                            <option value="2024">2024</option>
+                                            <option value="2023">2023</option>
+                                            <option value="2022">2022</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="card-block">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Bulan</th>
+                                                    <th>Penjualan</th>
+                                                    <th>Pembelian</th>
+                                                    <th>Profit</th>
+                                                    <th>Perbandingan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($monthlyStats as $stat)
+                                                <tr class="bg-white">
+                                                    <td>{{ $stat['month'] }}</td>
+                                                    <td>
+                                                        {{ $stat['sales_count'] }} transaksi<br>
+                                                        <small>Rp {{ number_format($stat['sales_amount'], 0, ',', '.') }}</small>
+                                                    </td>
+                                                    <td>
+                                                        {{ $stat['purchase_count'] }} transaksi<br>
+                                                        <small>Rp {{ number_format($stat['purchase_amount'], 0, ',', '.') }}</small>
+                                                    </td>
+                                                    <td>Rp {{ number_format($stat['profit'], 0, ',', '.') }}</td>
+                                                    <td>
+                                                        <div class="progress bg-light" data-bs-toggle="tooltip" title="{{ $stat['percentage'] }}%">
+                                                            <div class="progress-bar {{ $stat['percentage'] > 0 ? 'bg-c-green' : 'bg-c-pink' }}" 
+                                                                 style="width:{{ abs($stat['percentage']) }}%"></div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -228,10 +227,15 @@
 <!-- Required Jquery -->
 
 <script>
-document.getElementById('yearFilter').addEventListener('change', function() {
-const selectedYear = this.value;
-// Here you can add AJAX call to fetch data for the selected year
-// and update the table content
+['filtertahun', 'filterSalesTahun', 'filterPurchaseTahun'].forEach(function(id) {
+    var element = document.getElementById(id);
+    if (element) {
+        element.addEventListener('change', function() {
+            var selectedYear = this.value;
+            // Here you can add AJAX call to fetch data for the selected year
+            // and update the table content
+        });
+    }
 });
 </script>
 
@@ -250,10 +254,15 @@ return new bootstrap.Tooltip(tooltipTriggerEl)
 @push('scripts')
 <script src="{{ asset('be/js/chart.js') }}"></script>
 <script>
-document.getElementById('yearFilter').addEventListener('change', function() {
-const selectedYear = this.value;
-// Here you can add AJAX call to fetch data for the selected year
-// and update the table content
+['filtertahun', 'filterSalesTahun', 'filterPurchaseTahun'].forEach(function(id) {
+    var element = document.getElementById(id);
+    if (element) {
+        element.addEventListener('change', function() {
+            var selectedYear = this.value;
+            // Here you can add AJAX call to fetch data for the selected year
+            // and update the table content
+        });
+    }
 });
 </script>
 
