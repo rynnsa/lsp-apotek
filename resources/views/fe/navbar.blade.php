@@ -54,7 +54,7 @@
 
                                     <!-- Profile -->
                                     <div class="dropdown">
-                                        <a href="profile-pelanggan">
+                                        <a href="#" class="d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
                                             @if(auth('pelanggan')->user()->foto)
                                                 <img src="{{ asset('storage/' . auth('pelanggan')->user()->foto) }}" 
                                                     class="rounded-circle" 
@@ -67,7 +67,17 @@
                                                     </span>
                                                 </div>
                                             @endif
+                                            <i class="fas fa-ellipsis-v ms-2"></i>
                                         </a>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="{{ route('profile') }}">Profile</a></li>
+                                            <li>
+                                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item">Logout</button>
+                                                </form>
+                                            </li>
+                                        </ul>
                                     </div>
 
                                 @else

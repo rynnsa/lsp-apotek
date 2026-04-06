@@ -82,7 +82,7 @@ class PelangganController extends Controller
         Auth::guard('pelanggan')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('login');
+        return redirect('/');
     }
 
     public function datapelanggan()

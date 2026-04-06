@@ -43,8 +43,13 @@ Route::middleware(['auth:pelanggan'])->group(function () {
     Route::post('/checkout/process', [App\Http\Controllers\CartController::class, 'processOrder'])->name('order.process');
     Route::get('/status-pemesanan', [App\Http\Controllers\PenjualanController::class, 'status'])->name('status-pemesanan');
     Route::get('/pesanan/{id}/detail', [App\Http\Controllers\CartController::class, 'detail'])->name('pesanan.detail');
-
 }); 
+
+// Raja Ongkir Routes (outside auth middleware for AJAX calls)
+Route::get('/rajaongkir/cities/{provinceId}', [App\Http\Controllers\RajaOngkirController::class, 'getCities'])->name('rajaongkir.cities');
+Route::get('/rajaongkir/districts/{cityId}', [App\Http\Controllers\RajaOngkirController::class, 'getDistricts'])->name('rajaongkir.districts');
+Route::post('/rajaongkir/cost', [App\Http\Controllers\RajaOngkirController::class, 'checkOngkir'])->name('rajaongkir.cost');
+Route::post('/rajaongkir/cost', [App\Http\Controllers\RajaOngkirController::class, 'checkOngkir'])->name('rajaongkir.cost');
 
 Route::get('/check-payment-status/{orderId}', [App\Http\Controllers\MidtransController::class, 'checkStatus']);
 Route::post('/midtrans/callback', [App\Http\Controllers\MidtransController::class, 'callback']);
@@ -63,7 +68,6 @@ Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])-
 // Route::middleware(['auth'])->group(function () {
     Route::get('/landing', [App\Http\Controllers\AdminController::class, 'landing']);
 
-    // Admin and Pemilik only routes
     // Route::middleware(['jabatan:admin,pemilik'])->group(function () {
         Route::get('/kelola-pengguna', [App\Http\Controllers\KelolaPenggunaController::class, 'index'])->name('kelola-pengguna');
         Route::post('/kelola-pengguna', [App\Http\Controllers\KelolaPenggunaController::class, 'store'])->name('kelola-pengguna.store');
@@ -72,7 +76,6 @@ Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])-
         Route::get('/data-pelanggan', [App\Http\Controllers\PelangganController::class, 'datapelanggan']);
     // });
 
-    // Apoteker only routes
     // Route::middleware(['jabatan:apoteker'])->group(function () {
         Route::get('/obat', [App\Http\Controllers\DaftarObatController::class, 'index'])->name('obat');
         Route::post('/obat', [App\Http\Controllers\DaftarObatController::class, 'obat'])->name('obat.store');
@@ -139,5 +142,11 @@ Route::get('/search-obat', [App\Http\Controllers\ShopController::class, 'searchO
 Route::post('/midtrans/get-token/{id}', [App\Http\Controllers\MidtransController::class, 'getSnapToken'])->name('midtrans.token');
 Route::post('/midtrans/notification', [App\Http\Controllers\MidtransController::class, 'handleNotification'])->name('midtrans.notification');
 Route::post('/midtrans/update-status/{id}', [App\Http\Controllers\MidtransController::class, 'updateStatus'])->name('midtrans.update-status');
+
+Route::get('/rajaongkir', [App\Http\Controllers\RajaOngkirController::class, 'index'])->name('rajaongkir');
+Route::get('/cities/{provinceId}', [App\Http\Controllers\RajaOngkirController::class, 'getCities']);
+Route::get('/districts/{cityId}', [App\Http\Controllers\RajaOngkirController::class, 'getDistricts']);
+Route::post('/check-ongkir', [App\Http\Controllers\RajaOngkirController::class, 'checkOngkir']);
+
 
 

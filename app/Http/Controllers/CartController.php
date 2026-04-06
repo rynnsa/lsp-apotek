@@ -7,6 +7,7 @@ use App\Models\Keranjang;
 use App\Models\JenisPengiriman;
 use App\Models\MetodeBayar;
 use App\Models\Penjualan;
+use App\Models\AlamatPelanggan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -240,13 +241,116 @@ class CartController extends Controller
 
         $subtotal = $keranjangItems->sum('subtotal');
 
-        return view('checkout.index', [
+        // Get user addresses from profile or database
+        $userAddresses = [
+            [
+                'nama_penerima' => $user->nama_pelanggan,
+                'alamat' => $user->alamat1,
+                'kota' => $user->kota1,
+                'propinsi' => $user->propinsi1,
+                'kodepos' => $user->kodepos1
+            ],
+            [
+                'nama_penerima' => $user->nama_pelanggan,
+                'alamat' => $user->alamat2,
+                'kota' => $user->kota2,
+                'propinsi' => $user->propinsi2,
+                'kodepos' => $user->kodepos2
+            ],
+            [
+                'nama_penerima' => $user->nama_pelanggan,
+                'alamat' => $user->alamat3,
+                'kota' => $user->kota3,
+                'propinsi' => $user->propinsi3,
+                'kodepos' => $user->kodepos3
+            ]
+        ];
+
+        // Filter out empty addresses
+        $userAddresses = array_filter($userAddresses, function($addr) {
+            return !empty($addr['alamat']);
+        });
+
+        // Get provinces from Raja Ongkir API with caching and fallback
+        $provinces = [];
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'Accept' => 'application/json',
+                'key' => config('rajaongkir.api_key'),
+            ])->get('https://rajaongkir.komerce.id/api/v1/destination/province');
+
+            if ($response->successful()) {
+                $provinces = $response->json()['data'] ?? [];
+                // Cache successful response for 1 hour
+                \Illuminate\Support\Facades\Cache::put('rajaongkir_provinces', $provinces, 3600);
+            } else {
+                \Illuminate\Support\Facades\Log::warning('Province API failed:', ['status' => $response->status(), 'body' => $response->body()]);
+                // Use cached data or fallback
+                $provinces = \Illuminate\Support\Facades\Cache::get('rajaongkir_provinces', $this->getFallbackProvinces());
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to fetch provinces: ' . $e->getMessage());
+            // Use cached data or fallback
+            $provinces = \Illuminate\Support\Facades\Cache::get('rajaongkir_provinces', $this->getFallbackProvinces());
+        }
+
+        // Debug: Log the first province structure
+        if (!empty($provinces)) {
+            \Illuminate\Support\Facades\Log::info('Province structure:', ['first' => $provinces[0]]);
+        }
+
+        return view('fe.checkout', [
             'title' => 'Pemesanan - LifeCareYou',
             'keranjangItems' => $keranjangItems,
             'subtotal' => $subtotal,
             'jenisPengiriman' => JenisPengiriman::all(),
             'metodeBayar' => MetodeBayar::all(),
+            'userAddresses' => $userAddresses,
+            'provinces' => $provinces,
         ]);
+    }
+
+    /**
+     * Get fallback provinces data when API is not available
+     */
+    private function getFallbackProvinces()
+    {
+        return [
+            ['id' => 1, 'name' => 'ACEH'],
+            ['id' => 2, 'name' => 'SUMATERA UTARA'],
+            ['id' => 3, 'name' => 'SUMATERA BARAT'],
+            ['id' => 4, 'name' => 'RIAU'],
+            ['id' => 5, 'name' => 'JAMBI'],
+            ['id' => 6, 'name' => 'SUMATERA SELATAN'],
+            ['id' => 7, 'name' => 'BENGKULU'],
+            ['id' => 8, 'name' => 'LAMPUNG'],
+            ['id' => 9, 'name' => 'KEPULAUAN BANGKA BELITUNG'],
+            ['id' => 10, 'name' => 'KEPULAUAN RIAU'],
+            ['id' => 11, 'name' => 'DKI JAKARTA'],
+            ['id' => 12, 'name' => 'JAWA BARAT'],
+            ['id' => 13, 'name' => 'JAWA TENGAH'],
+            ['id' => 14, 'name' => 'DI YOGYAKARTA'],
+            ['id' => 15, 'name' => 'JAWA TIMUR'],
+            ['id' => 16, 'name' => 'BANTEN'],
+            ['id' => 17, 'name' => 'BALI'],
+            ['id' => 18, 'name' => 'NUSA TENGGARA BARAT'],
+            ['id' => 19, 'name' => 'NUSA TENGGARA TIMUR'],
+            ['id' => 20, 'name' => 'KALIMANTAN BARAT'],
+            ['id' => 21, 'name' => 'KALIMANTAN TENGAH'],
+            ['id' => 22, 'name' => 'KALIMANTAN SELATAN'],
+            ['id' => 23, 'name' => 'KALIMANTAN TIMUR'],
+            ['id' => 24, 'name' => 'KALIMANTAN UTARA'],
+            ['id' => 25, 'name' => 'SULAWESI UTARA'],
+            ['id' => 26, 'name' => 'SULAWESI TENGAH'],
+            ['id' => 27, 'name' => 'SULAWESI SELATAN'],
+            ['id' => 28, 'name' => 'SULAWESI TENGGARA'],
+            ['id' => 29, 'name' => 'GORONTALO'],
+            ['id' => 30, 'name' => 'SULAWESI BARAT'],
+            ['id' => 31, 'name' => 'MALUKU'],
+            ['id' => 32, 'name' => 'MALUKU UTARA'],
+            ['id' => 33, 'name' => 'PAPUA BARAT'],
+            ['id' => 34, 'name' => 'PAPUA'],
+        ];
     }
 
     public function processCheckout(Request $request)
@@ -372,11 +476,22 @@ class CartController extends Controller
         try {
             $user = Auth::guard('pelanggan')->user();
             
-            // Get shipping type
-            $jenisPengiriman = JenisPengiriman::findOrFail($request->id_jenis_kirim);
-            
-            // Calculate costs
-            $ongkos_kirim = $jenisPengiriman->ongkos_kirim;
+            // Get shipping address from user profile
+            $shippingAddressIndex = $request->shipping_address;
+            $userAddresses = [
+                ['alamat' => $user->alamat1, 'kota' => $user->kota1, 'propinsi' => $user->propinsi1, 'kodepos' => $user->kodepos1],
+                ['alamat' => $user->alamat2, 'kota' => $user->kota2, 'propinsi' => $user->propinsi2, 'kodepos' => $user->kodepos2],
+                ['alamat' => $user->alamat3, 'kota' => $user->kota3, 'propinsi' => $user->propinsi3, 'kodepos' => $user->kodepos3]
+            ];
+
+            $shippingAddress = $userAddresses[$shippingAddressIndex] ?? [];
+
+            if (empty($shippingAddress['alamat'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Alamat pengiriman tidak valid'
+                ], 400);
+            }
 
             DB::beginTransaction();
             try {
@@ -387,23 +502,30 @@ class CartController extends Controller
                     ->get();
 
                 $subtotal = $cartItems->sum('subtotal');
+                $ongkir = floatval($request->ongkir ?? 0);
                 $biaya_app = $subtotal * 0.10; // Calculate 10% of subtotal
-                $total_bayar = $subtotal + $ongkos_kirim + $biaya_app;
+                $total_bayar = $subtotal + $ongkir + $biaya_app;
 
-                // Create penjualan with costs
+                // Create penjualan with shipping address and Raja Ongkir data
                 $penjualan = Penjualan::create([
                     'id_pelanggan' => $user->id,
                     'id_metode_bayar' => $request->id_metode_bayar,
-                    'id_jenis_kirim' => $request->id_jenis_kirim,
+                    'id_jenis_kirim' => 1, // Default jenis kirim (bisa di-update nanti)
                     'tgl_penjualan' => now(),
                     'url_resep' => $request->hasFile('url_resep') ? 
                         $request->file('url_resep')->store('resep', 'public') : null,
                     'status_order' => 'Menunggu Konfirmasi',
                     'keterangan_status' => 'Pesanan sedang diproses',
-                    'ongkos_kirim' => $ongkos_kirim,
+                    'ongkos_kirim' => $ongkir,
                     'biaya_app' => $biaya_app,
                     'total_bayar' => $total_bayar,
-                    'no_resi' => Penjualan::generateNoResi()
+                    'no_resi' => Penjualan::generateNoResi(),
+                    'alamat_pengiriman' => $shippingAddress['alamat'],
+                    'kota_pengiriman' => $shippingAddress['kota'],
+                    'provinsi_pengiriman' => $shippingAddress['propinsi'],
+                    'kodepos_pengiriman' => $shippingAddress['kodepos'],
+                    'courier' => $request->courier,
+                    'shipping_package' => $request->shipping_package,
                 ]);
 
                 // Create detail_penjualan records
@@ -432,6 +554,7 @@ class CartController extends Controller
 
             } catch (\Exception $e) {
                 DB::rollback();
+                Log::error('Order process error: ' . $e->getMessage());
                 throw $e;
             }
         } catch (\Exception $e) {

@@ -20,6 +20,12 @@ class Penjualan extends Model
         'id_jenis_kirim',
         'id_pelanggan',
         'no_resi',
+        'alamat_pengiriman',
+        'kota_pengiriman',
+        'provinsi_pengiriman',
+        'kodepos_pengiriman',
+        'courier',
+        'shipping_package',
     ];
 
     public static function generateNoResi()

@@ -22,8 +22,8 @@
         <div class="container-fluid py-5">
             <div class="container py-3">
             <h1 class="mb-3"> </h1>
-                <div class="d-flex justify-content-center mb-3">
-                    <div class="d-flex gap-2">
+                <div class="d-flex mb-3">
+                    <div class="d-flex gap-2 mb-3 justify-content-center">
                         <button class="btn btn-outline-danger text-danger bg-white rounded-pill py-1 px-4" onclick="filterStatus('Batal')">Dibatalkan</button>
                         <button class="btn btn-outline-warning text-warning bg-white rounded-pill py-1 px-4" onclick="filterStatus('Menunggu Konfirmasi')">Belum Bayar</button>
                         <button class="btn btn-outline-secondary text-secondary bg-white rounded-pill py-1 px-4" onclick="filterStatus('Diproses')">Diproses</button>
@@ -61,7 +61,7 @@
                                     <th>Harga</th>
                                     <th>Pembayaran</th>
                                     <th>Status Pemesanan</th>
-                                    <th>Keterangan</th>
+                                    {{-- <th>Keterangan</th> --}}
                                     <th>Resep</th>
                                 </tr>
                             </thead>
@@ -71,10 +71,10 @@
                                     <td class="align-middle text-center" style="width: 100px;">
                                         <img src="{{ asset('storage/' . $detail->obat->foto1) }}" alt="{{ $detail->obat->nama_obat }}" style="width: 50px; height: 50px; object-fit: cover;"  class="rounded-pill">
                                     </td>
-                                    <td class="align-middle">{{ $detail->obat->nama_obat }}</td>
-                                    <td class="align-middle">{{ $detail->jumlah_beli }}x</td>
-                                    <td class="align-middle">Rp {{ number_format($detail->obat->harga_jual * $detail->jumlah_beli, 0, ',', '.') }}</td>
-                                    <td class="align-middle">{{ $penjualan->metode_bayar->metode_pembayaran }}</td>
+                                    <td class="align-middle" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis;">{{ $detail->obat->nama_obat }}</td>
+                                    <td class="align-middle text-center">{{ $detail->jumlah_beli }}x</td>
+                                    <td class="align-middle" style="white-space: nowrap;">Rp {{ number_format($detail->obat->harga_jual * $detail->jumlah_beli, 0, ',', '.') }}</td>
+                                    <td class="align-middle" style="max-width: 120px; overflow: hidden; text-overflow: ellipsis;">{{ $penjualan->metode_bayar->metode_pembayaran }}</td>
                                     <td class="align-middle">
                                         <span class="badge py-2 px-3 rounded-pill text-white 
                                             @if($penjualan->status_order == 'Menunggu Konfirmasi') bg-secondary
@@ -89,13 +89,13 @@
                                             {{ $penjualan->status_order }}
                                         </span>
                                     </td>
-                                    <td class="align-middle" style="white-space: normal; word-wrap: break-word; max-width: 250px;">
+                                    {{-- <td class="align-middle" style="white-space: normal; word-wrap: break-word; max-width: 250px;">
                                             @if($penjualan->status_order == 'Menunggu Konfirmasi')
                                                 Pemesanan akan diproses setelah melakukan pembayaran
                                             @elseif($penjualan->status_order == 'Diproses')
                                                 Pesanan sedang diproses
                                             @elseif($penjualan->status_order == 'Menunggu Kurir')
-                                                Pengiriman akan segera dilakukan oleh kurir
+                                                Pengiriman akan segera dilakukan oleh {{ $penjualan->courier ?? 'kurir' }}
                                             @elseif($penjualan->status_order == 'Selesai')
                                                 Pesanan telah diterima oleh pelanggan
                                             @elseif($penjualan->status_order == 'Dibatalkan Pembeli')
@@ -103,23 +103,61 @@
                                             @else
                                                 Pesanan Bermasalah silahkan hubungi admin kami <br> <a href="mailto:alifecareyou@gmail.com" target="_blank">alifecareyou@gmail.com</a>
                                             @endif
-                                    </td>
+                                    </td> --}}
                                     <td class="align-middle">
                                         @if($penjualan->url_resep)
                                             <img src="{{ asset('storage/' . $penjualan->url_resep) }}" alt="Resep" class="img-thumbnail mt-1" style="width: 80px;">
                                         @else
-                                            <span class="fst-italic text-muted">Tidak ada resep</span>
+                                            <span class="fst-italic text-muted">Tidak ada</span>
                                         @endif
                                     </td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="d-flex justify-content-between align-items-center px-3 py-2">
+
+                        <!-- Shipping Address Section -->
+                        <div class="px-3 py-3 border-top bg-light">
+                            <h6 class="mb-2"><strong>Alamat Pengiriman</strong></h6>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <p class="mb-1"><span class="text-muted fs-6">Alamat:</span></p>
+                                    <p class="mb-2" style="font-size: 15px;">{{ $penjualan->alamat_pengiriman ?? $penjualan->pelanggan->alamat1 }}</p>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><span class="text-muted fs-6">Kota:</span></p>
+                                            <p class="mb-2" style="font-size: 15px;">{{ $penjualan->kota_pengiriman ?? $penjualan->pelanggan->kota1 }}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><span class="text-muted fs-6">Provinsi:</span></p>
+                                            <p class="mb-2" style="font-size: 15px;">{{ $penjualan->provinsi_pengiriman ?? $penjualan->pelanggan->propinsi1 }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="mb-1"><span class="text-muted fs-6">Kode Pos:</span></p>
+                                    <p class="mb-0" style="font-size: 15px;">{{ $penjualan->kodepos_pengiriman ?? $penjualan->pelanggan->kodepos1 }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    @if($penjualan->courier)
+                                        <p class="mb-1"><span class="text-muted fs-6">Kurir:</span></p>
+                                        <p class="mb-2"><strong style="font-size: 15px;">{{ strtoupper($penjualan->courier) }}</strong></p>
+                                    @endif
+                                    
+                                    @if($penjualan->shipping_package)
+                                        <p class="mb-1"><span class="text-muted fs-6">Paket:</span></p>
+                                        <p class="mb-0" style="font-size: 15px;">{{ $penjualan->shipping_package }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top p-0">
+                        <div class="d-flex justify-content-between align-items-center px-3 py-3">
                             <div>
                                 @if(!$hideButtons)
                                     <a href="javascript:void(0)" onclick="cancelOrder({{ $penjualan->id }})"
-                                    class="btn btn-sm rounded-lg btn-danger py-1 px-4 text-white" style="font-size: 12px;">
+                                    class="btn btn-sm rounded-lg btn-danger py-1 px-4 text-white" style="font-size: 15px;">
                                         Batalkan Pesanan
                                     </a>
                                 @endif
@@ -129,16 +167,16 @@
                                     $subtotal = $penjualan->detail_penjualans->sum(function($detail) {
                                         return $detail->jumlah_beli * $detail->obat->harga_jual;
                                     });
-                                    $penjualan->biaya_app = $subtotal * 0.09; // You can adjust this value or fetch from settings
+                                    $penjualan->biaya_app = $subtotal * 0.09;
                                     $total_bayar = $subtotal + $penjualan->jenis_pengiriman->ongkos_kirim + $penjualan->biaya_app;
                                 @endphp
                                 <div class="text-end">
                                     <div class="text-muted">
-                                        <small>Subtotal: Rp {{ number_format($subtotal, 0, ',', '.') }}</small><br>
-                                        <small>Ongkos Kirim: Rp {{ number_format($penjualan->ongkos_kirim, 0, ',', '.') }}</small><br>
-                                        <small>Biaya Aplikasi: Rp {{ number_format($penjualan->biaya_app, 0, ',', '.') }}</small>
+                                        <span class="fs-6">Subtotal: Rp {{ number_format($subtotal, 0, ',', '.') }}</span><br>
+                                        <span class="fs-6">Ongkos Kirim: Rp {{ number_format($penjualan->ongkos_kirim, 0, ',', '.') }}</span><br>
+                                        <span class="fs-6">Biaya Aplikasi: Rp {{ number_format($penjualan->biaya_app, 0, ',', '.') }}</span>
                                     </div>
-                                    <div class="fw-bold text-primary mt-1">
+                                    <div class="fw-bold text-primary mt-1 medium">
                                         Total Bayar: Rp {{ number_format($penjualan->total_bayar, 0, ',', '.') }}
                                     </div>
                                 </div>
@@ -300,35 +338,298 @@ function updateOrderStatus(penjualanId, result) {
 </script>
 
 <style>
+    /* Card Consistency Styles */
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 600px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+        color: white !important;
+        padding: 16px 20px;
+        border-bottom: none;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .card-header strong {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .card-body {
+        flex: 0 1 auto;
+        overflow-y: auto;
+        max-height: 320px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-body table {
+        table-layout: fixed;
+        margin-bottom: 0;
+        background: transparent;
+    }
+
+    .card-body table thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: #007bff;
+        color: white;
+    }
+
+    .card-body table thead th {
+        padding: 12px 8px;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .card-body table tbody tr {
+        height: 75px;
+        border-bottom: 1px solid #e9ecef;
+        transition: background-color 0.2s ease;
+    }
+
+    .card-body table tbody tr:hover {
+        background-color: #f1f3f4;
+    }
+
+    .card-body table td {
+        padding: 12px 8px;
+        vertical-align: middle;
+        font-size: 14px;
+        word-wrap: break-word;
+        overflow: hidden;
+        border: none;
+    }
+
+    .card-body table td:first-child {
+        width: 80px;
+        text-align: center;
+    }
+
+    .card-body img {
+        width: 50px !important;
+        height: 50px !important;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Shipping Address Section */
+    .shipping-address-section {
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-top: 1px solid #dee2e6;
+        max-height: 180px;
+        overflow-y: auto;
+        padding: 16px 20px;
+        border-radius: 0 0 12px 12px;
+    }
+
+    .shipping-address-section h6 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #495057;
+        display: flex;
+        align-items: center;
+    }
+
+    .shipping-address-section h6::before {
+        content: "📍";
+        margin-right: 8px;
+    }
+
+    .shipping-address-section p {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .shipping-address-section .text-muted {
+        color: #6c757d !important;
+    }
+
+    /* Card Footer */
+    .card-footer {
+        flex-shrink: 0;
+        background: #ffffff !important;
+        border-top: 1px solid #dee2e6;
+        min-height: 90px;
+        display: flex;
+        align-items: stretch;
+        border-radius: 0 0 12px 12px;
+        padding: 16px 20px;
+    }
+
+    .card-footer .d-flex {
+        width: 100%;
+        gap: 15px;
+    }
+
+    .card-footer .text-end {
+        min-width: 250px;
+    }
+
+    .card-footer .text-muted span {
+        font-size: 14px;
+        display: block;
+        margin-bottom: 4px;
+        color: #6c757d;
+    }
+
+    .card-footer .fw-bold {
+        font-size: 18px;
+        margin-top: 8px;
+        color: #007bff;
+        font-weight: 700;
+    }
+
+    /* Badge Styling */
+    .badge {
+        font-size: 12px !important;
+        white-space: nowrap;
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    /* Button Consistency */
+    .btn-sm {
+        font-size: 12px;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Filter button styles */
+    .btn-outline-danger, .btn-outline-warning, .btn-outline-secondary, .btn-outline-info, .btn-outline-success {
+        border-width: 2px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
     .btn-outline-danger:hover, .btn-outline-danger.active {
         background-color: var(--bs-danger) !important;
         color: white !important;
+        border-color: var(--bs-danger) !important;
+        transform: translateY(-2px);
     }
+    
     .btn-outline-warning {
         color: #6c757d !important;
         border-color: #6c757d !important;
     }
+    
     .btn-outline-warning:hover, .btn-outline-warning.active {
         background-color: #6c757d !important;
         color: white !important;
+        border-color: #6c757d !important;
+        transform: translateY(-2px);
     }
+    
     .btn-outline-secondary:hover, .btn-outline-secondary.active {
         background-color: #fbbd00 !important;
         color: white !important;
+        border-color: #fbbd00 !important;
+        transform: translateY(-2px);
     }
 
     .btn-outline-info:hover, .btn-outline-info.active {
         background-color: var(--bs-info) !important;
         color: white !important;
+        border-color: var(--bs-info) !important;
+        transform: translateY(-2px);
     }
+    
     .btn-outline-success:hover, .btn-outline-success.active {
         background-color: var(--bs-success) !important;
         color: white !important;
+        border-color: var(--bs-success) !important;
+        transform: translateY(-2px);
     }
 
     .small-popup {
-    max-width: 400px !important;
-}
+        max-width: 400px !important;
+    }
+
+    /* Container Styles */
+    .container-fluid.py-5 {
+        background: white;
+        padding: 40px 0;
+    }
+
+    .container {
+        padding-bottom: 20px;
+    }
+
+    /* Filter Buttons Container */
+    .d-flex.justify-content-center.mb-3 .d-flex.gap-2 {
+        background: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .card {
+            min-height: auto;
+            margin-bottom: 20px;
+        }
+
+        .card-body {
+            max-height: 400px;
+        }
+
+        .shipping-address-section {
+            max-height: none;
+        }
+
+        .card-footer .d-flex {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-footer .text-end {
+            min-width: 100%;
+            padding-top: 16px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .d-flex.justify-content-center.mb-3 .d-flex.gap-2 {
+            flex-wrap: wrap;
+            padding: 12px 16px;
+        }
+
+        .btn-outline-danger, .btn-outline-warning, .btn-outline-secondary, .btn-outline-info, .btn-outline-success {
+            margin-bottom: 8px;
+        }
+    }
 </style>
 
 <script>

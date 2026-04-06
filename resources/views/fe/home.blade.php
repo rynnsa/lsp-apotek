@@ -223,7 +223,7 @@
 
 
         <!-- Vesitable Shop Start-->
-        <div class="container-fluid vesitable py-5">
+        {{-- <div class="container-fluid vesitable py-5">
             <div class="container py-5">
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-column flex-md-row gap-3">
                     <h1 class="mb-0">Produk Terlaris</h1>
@@ -268,7 +268,7 @@
                     @endforeach
                 </div>
             </div>
-        </div>
+        </div> --}}
         <!-- Vesitable Shop End -->
 
 
@@ -314,15 +314,15 @@
                         </div>
 
                         <!-- Langkah 3 -->
-                        <div class="col-6 col-md-3 mb-4 step-item">
+                        {{-- <div class="col-6 col-md-3 mb-4 step-item">
                         <div class="step-circle">3</div>
                         <h5 class="mt-3">Ambil Obat</h5>
                         <p>Ambil obat yang sudah dipesan di Apotek LifeCareYou</p>
-                        </div>
+                        </div> --}}
 
                         <!-- Langkah 4 -->
                         <div class="col-6 col-md-3 mb-4 step-item">
-                        <div class="step-circle">4</div>
+                        <div class="step-circle">3</div>
                         <h5 class="mt-3">Beri Penilaian</h5>
                         <p>Bantu kami meningkatkan layanan dengan memberi ulasan</p>
                         </div>
