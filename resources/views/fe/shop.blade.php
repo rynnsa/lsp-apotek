@@ -141,7 +141,7 @@
                                                     @auth('pelanggan')
                                                         <div class="shop-card-footer">
                                                             <p class="shop-price mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
-                                                            <button onclick="tambahKeKeranjang(event, {{ $obat->id }})" class="btn btn-primary shop-add-btn">
+                                                            <button onclick="tambahKeKeranjang(event, {{ $obat->id }})" class="btn btn-primary shop-add-btn text-white">
                                                                 <i class="fa fa-shopping-bag me-2"></i> Tambah
                                                             </button>
                                                         </div>

@@ -1,4 +1,7 @@
 @extends('fe.master')
+@section('navbar')
+    @include('fe.navbar')
+@endsection
 @section('shop-detail')
     @include('fe.shop-detail')
 @endsection

@@ -196,7 +196,7 @@
                                                                         @auth('pelanggan')
                                                                             <div class="home-shop-card-footer">
                                                                                 <p class="home-shop-price mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
-                                                                                <button class="btn btn-primary home-shop-add-btn btn-tambah" data-id="{{ $obat->id }}">
+                                                                                <button class="btn btn-primary home-shop-add-btn btn-tambah text-white" data-id="{{ $obat->id }}">
                                                                                     <i class="fa fa-shopping-bag me-2"></i> Tambah
                                                                                 </button>
                                                                             </div>
@@ -258,7 +258,7 @@
                             @auth('pelanggan')
                                 <div class="d-flex justify-content-between flex-lg-wrap align-items-center gap-2">
                                     <p class="text-dark fs-5 fw-bold mb-0">Rp {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
-                                    <button onclick="tambah({{ $obat->id }})" class="btn btn-primary rounded-pill px-3 home-shop-add-btn">
+                                    <button onclick="tambah({{ $obat->id }})" class="btn btn-primary rounded-pill px-3 home-shop-add-btn text-white">
                                         <i class="fa fa-shopping-bag me-2"></i> Tambah
                                     </button>
                                 </div>

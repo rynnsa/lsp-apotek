@@ -16,7 +16,13 @@
             <div class="container-fluid bg-white w-full">
                 <nav class="navbar navbar-light bg-white navbar-expand-xl w-full">
                     <div class="container-fluid">
-                        <a href="index.html" class="navbar-brand ms-3"><h1 class="text-secondary display-6">LifeCareYou</h1></a>
+                        @if(Request::is('shop-detail/*'))
+                            <a href="javascript:history.back()" class="btn btn-secondary rounded-circle d-flex align-items-center justify-content-center ms-3" style="width: 45px; height: 45px;" title="Kembali">
+                                <i class="fas fa-arrow-left text-white"></i>
+                            </a>
+                        @else
+                            <a href="index.html" class="navbar-brand ms-3"><h1 class="text-secondary display-6">LifeCareYou</h1></a>
+                        @endif
                         {{-- @auth('pelanggan')
                             <span class="nav-item nav-link text-primary">
                                 Hi, {{ auth('pelanggan')->user()->nama_pelanggan }}

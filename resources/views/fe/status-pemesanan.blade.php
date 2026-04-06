@@ -44,7 +44,7 @@
                             @endphp
                             @if(!$hideButtons) 
                                 <a href="javascript:void(0)" onclick="bayarSekarang('{{ $penjualan->id }}', {{ $total_bayar }})"
-                                    class="btn btn-sm rounded-pill btn-primary py-1 px-4 text-white" style="font-size: 12px;" id="snap-token">
+                                    class="btn btn-sm rounded-lg btn-primary py-1 px-4 text-white" style="font-size: 12px;" id="snap-token">
                                     <i class="fa fa-credit-card me-1"></i>  
                                     Bayar Sekarang
                                 </a>
@@ -119,10 +119,9 @@
                             <div>
                                 @if(!$hideButtons)
                                     <a href="javascript:void(0)" onclick="cancelOrder({{ $penjualan->id }})"
-                                    class="btn btn-sm rounded-pill btn-danger py-1 px-4 text-white" style="font-size: 12px;">
+                                    class="btn btn-sm rounded-lg btn-danger py-1 px-4 text-white" style="font-size: 12px;">
                                         Batalkan Pesanan
                                     </a>
-                                    
                                 @endif
                             </div>
                             <div>

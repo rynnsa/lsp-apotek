@@ -15,35 +15,88 @@
     height: 160px;
     overflow: hidden;
 }
+
+.shop-card {
+    border: 1px solid #3b82f6;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 20px rgba(24, 38, 71, 0.052);
+    overflow: hidden;
+    transition: transform .3s ease, box-shadow .3s ease;
+    background: #ffffff;
+}
+.shop-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+}
+.shop-card-img {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+}
+.shop-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .4s ease;
+}
+.shop-card:hover .shop-card-img img {
+    transform: scale(1.05);
+}
+.shop-card-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(52, 113, 255, 0.88);
+    color: #fff;
+    padding: .45rem .95rem;
+    font-size: .75rem;
+    letter-spacing: .05em;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+.shop-card-body {
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+}
+.shop-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: .65rem;
+    color: black;
+}
+.shop-card-text {
+    color: #475569;
+    min-height: 3rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    flex: 1;
+}
+.shop-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+}
+.shop-price {
+    font-weight: 700;
+    color: #3b82f6;
+    margin-bottom: 0;
+}
+.shop-add-btn {
+    border-radius: 999px;
+    padding: .65rem 1.2rem;
+}
+
+.mt-7 {
+    margin-top: 8rem !important;
+}
 </style>
 
-<!-- Navbar start -->
-        <div class="container-fluid fixed-top">
-            <div class="container px-0">
-                <nav class="navbar navbar-light bg-white navbar-expand-xl">
-                <a href="javascript:history.back()" class="btn btn-secondary rounded-circle d-flex align-items-center justify-content-center ms-3" style="width: 40px; height: 40px;">
-                        <i class="fas fa-arrow-left text-white"></i>
-                    </a>
-                    <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                        <span class="fa fa-bars text-primary"></span>
-                    </button>
-                    <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
-                        <div class="d-flex m-3 me-0">
-                            <a href="{{ route('cart') }}" class="position-relative me-4 my-auto">
-                                <i class="fa fa-shopping-bag fa-2x"></i>
-                                <span class="cart-count badge bg-primary" style="display: {{ auth('pelanggan')->check() && auth('pelanggan')->user()->keranjang()->count() > 0 ? 'inline-block' : 'none' }}">
-                                    {{ auth('pelanggan')->check() ? auth('pelanggan')->user()->keranjang()->sum('jumlah_order') : 0 }}
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </div>
-        <!-- Navbar End -->
-
         <!-- Single Product Start -->
-        <div class="container-fluid py-5 mt-5">
+        <div class="container-fluid py-5 mt-7">
             <div class="container py-5">
                 <div class="row g-4 mb-5">
                     <div class="col-lg-8 col-xl-12">
@@ -191,7 +244,7 @@
                                         <div class="border-bottom rounded">
                                             <input type="email" class="form-control border-1" placeholder="Your Email *">
                                         </div>
-                                    </div>
+                                    </div> 
                                     <div class="col-lg-12">
                                         <div class="border-bottom rounded my-4">
                                             <textarea name="" id="" class="form-control border-1" cols="30" rows="8" placeholder="Your Review *" spellcheck="false"></textarea>
@@ -219,24 +272,41 @@
                     </div>
                 </div>    
                 <h1 class="fw-bold mb-0">Produk Sejenis Lainnya</h1>
-                <div class="vesitable">
-                    <div class="owl-carousel vegetable-carousel justify-content-center">
-                        @foreach($related_products as $relatedObat)
-                        <div class="border border-primary rounded position-relative vesitable-item">
-                            <div class="vesitable-img">
-                                <img src="{{ asset('storage/' . $relatedObat->foto1) }}" class="img-fluid w-100 rounded-top" alt="{{ $relatedObat->nama_obat }}">
-                            </div>
-                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">{{ $relatedObat->jenis_obat->jenis }}</div>
-                            <div class="p-4 pb-0 rounded-bottom">
-                                <h4>{{ $relatedObat->nama_obat }}</h4>
-                                <p>{{ Str::limit($relatedObat->deskripsi_obat, 80) }}</p>
-                                <div class="d-flex justify-content-between flex-lg-wrap">
-                                    <p class="text-dark fs-5 fw-bold">Rp {{ number_format($relatedObat->harga_jual, 0, ',', '.') }}</p>
-                                    <a href="{{ route('shop-detail', ['id' => $relatedObat->id]) }}" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Lihat</a>
+                <div class="vesitable mt-4">
+                    <div class="row g-4">
+                        @forelse($related_products as $relatedObat)
+                        <div class="col-md-6 col-lg-6 col-xl-4">
+                            <div class="card shop-card">
+                                <div class="shop-card-img">
+                                    <img src="{{ asset('storage/' . $relatedObat->foto1) }}" alt="{{ $relatedObat->nama_obat }}">
+                                    <div class="shop-card-badge">{{ $relatedObat->jenis_obat->jenis }}</div>
+                                </div>
+                                <div class="card-body shop-card-body">
+                                    <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+                                        <a href="{{ route('shop-detail', ['id' => $relatedObat->id]) }}" class="text-decoration-none text-dark flex-grow-1">
+                                            <h4 class="shop-card-title mb-0">{{ $relatedObat->nama_obat }}</h4>
+                                        </a>
+                                        @guest('pelanggan')
+                                            <p class="shop-price mb-0">Rp {{ number_format($relatedObat->harga_jual, 0, ',', '.') }}</p>
+                                        @endguest
+                                    </div>
+                                    <p class="shop-card-text">{{ Str::limit($relatedObat->deskripsi_obat, 100) }}</p>
+                                    @auth('pelanggan')
+                                        <div class="shop-card-footer">
+                                            <p class="shop-price mb-0">Rp {{ number_format($relatedObat->harga_jual, 0, ',', '.') }}</p>
+                                            <button onclick="tambahKeKeranjang(event, {{ $relatedObat->id }})" class="btn btn-primary shop-add-btn text-white">
+                                                <i class="fa fa-shopping-bag me-2"></i> Tambah
+                                            </button>
+                                        </div>
+                                    @endauth
                                 </div>
                             </div>
                         </div>
-                        @endforeach
+                        @empty
+                        <div class="col-12 text-center text-muted">
+                            Tidak ada produk sejenis lainnya.
+                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -323,6 +393,54 @@
                     title: 'Gagal',
                     text: error.message || 'Terjadi kesalahan saat menambahkan produk ke keranjang'
                 });
+            });
+        }
+
+        // Fungsi untuk menambah ke keranjang dari produk sejenis
+        function tambahKeKeranjang(event, obatId) {
+            event.preventDefault();
+
+            fetch('{{ route('cart.add') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    obat_id: obatId,
+                    jumlah: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Produk berhasil ditambahkan ke keranjang',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    updateCartCount(data.cart_count);
+                } else {
+                    throw new Error(data.message || 'Gagal menambahkan ke keranjang');
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: error.message || 'Terjadi kesalahan saat menambahkan produk ke keranjang'
+                });
+            });
+        }
+
+        // Fungsi untuk update tampilan jumlah keranjang
+        function updateCartCount(count) {
+            const cartCountElements = document.querySelectorAll('.cart-count');
+            cartCountElements.forEach(el => {
+                el.textContent = count;
+                el.style.display = count > 0 ? 'inline-block' : 'none';
             });
         }
         </script>
