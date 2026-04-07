@@ -64,7 +64,7 @@
                                         <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
                                         <td class="align-middle">{{ $pembelian->no_nota }}</td>
                                         <td class="align-middle">{{ date('d/m/Y', strtotime($pembelian->tgl_pembelian)) }}</td>
-                                        <td class="align-middle">Rp {{ number_format($pembelian->total_bayar, 0, ',', '.') }}</td>
+                                        <td class="align-middle" data-total="{{ $pembelian->id }}">Rp {{ number_format($pembelian->total_bayar, 0, ',', '.') }}</td>
                                         <td class="align-middle">{{ $pembelian->distributor->nama_distributor }}</td>
                                         <td class="align-middle">
                                         </td>
@@ -73,10 +73,10 @@
                                             </button>
                                             <a href="{{ route('pembelian.edit', $pembelian->id) }}" class="btn btn-warning btn-sm ti-pencil">
                                             </a>
-                                            <form action="{{ route('pembelian.destroy', $pembelian->id) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('pembelian.destroy', $pembelian->id) }}" method="POST" class="d-inline delete-form" data-item-name="{{ $pembelian->no_nota }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm ti-trash" onclick="return confirm('Yakin ingin menghapus?')">
+                                                <button type="submit" class="btn btn-danger btn-sm ti-trash">
                                                 </button>
                                             </form>
                                         </td>
@@ -155,6 +155,34 @@
         });
     });
 
+    // Function to recalculate total for each pembelian
+    function recalculateTotals() {
+        @foreach($pembelians as $pembelian)
+            const subtotals{{ $pembelian->id }} = [
+                @foreach($pembelian->detail_pembelians as $detail)
+                    {{ $detail->subtotal }},
+                @endforeach
+            ];
+            const total{{ $pembelian->id }} = subtotals{{ $pembelian->id }}.reduce((sum, val) => sum + val, 0);
+            const totalCell{{ $pembelian->id }} = document.querySelector('[data-total="{{ $pembelian->id }}"]');
+            if (totalCell{{ $pembelian->id }}) {
+                totalCell{{ $pembelian->id }}.textContent = 'Rp ' + total{{ $pembelian->id }}.toLocaleString('id-ID');
+            }
+        @endforeach
+    }
+
+    // Soft refresh - check if data might have changed and reload if needed
+    let lastFocusTime = Date.now();
+    window.addEventListener('focus', function() {
+        const currentTime = Date.now();
+        // If more than 2 seconds have passed since last focus, likely user switched tabs/windows
+        // In that case, reload to get fresh data
+        if (currentTime - lastFocusTime > 2000) {
+            location.reload();
+        }
+        lastFocusTime = currentTime;
+    });
+
     // Search and filter functionality
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
@@ -178,6 +206,16 @@
 
         searchInput.addEventListener('input', filterTable);
         filterPembelian.addEventListener('change', filterTable);
+        
+        // Recalculate totals on page load
+        recalculateTotals();
+        
+        // Add listeners to modals to recalculate when opened
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function() {
+                recalculateTotals();
+            });
+        });
     });
 
     function addDetailForm() {
@@ -243,6 +281,35 @@
             if(data.success) {
                 window.location.reload();
             }
+        });
+    });
+</script>
+
+<script>
+    // SweetAlert2 Delete Confirmation
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.delete-form');
+        
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = this.getAttribute('data-item-name');
+                
+                Swal.fire({
+                    title: 'Hapus Pembelian?',
+                    html: `<span class="text-dark">Apakah Anda yakin ingin menghapus pembelian dengan nota <strong>${itemName}</strong>?</span>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
         });
     });
 </script>

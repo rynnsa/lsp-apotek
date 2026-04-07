@@ -54,13 +54,13 @@
                                 </div>
                                 <div class="card-body">
                                     <div id="detail-forms">
-                                        @foreach($detail_pembelians as $detail)
+                                        @foreach($detail_pembelians as $index => $detail)
                                             <div class="detail-form mb-4">
                                                 <div class="row">
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label>Obat</label>
-                                                            <select class="form-select form-control rounded-3 custom-select" name="id_obat" required>
+                                                            <select class="form-select form-control rounded-3 custom-select" name="details[{{ $index }}][id_obat]" required>
                                                                 <option value="">Pilih Obat</option>
                                                                 @foreach($obats as $obat)
                                                                     <option value="{{ $obat->id }}" {{ $obat->id == $detail->id_obat ? 'selected' : '' }}>
@@ -73,20 +73,25 @@
                                                     <div class="col-md-2">
                                                         <div class="form-group">
                                                             <label>Jumlah</label>
-                                                            <input type="number" class="form-control" name="jumlah_beli" value="{{ $detail->jumlah_beli }}" onchange="calculateSubtotal(this)" required>
+                                                            <input type="number" class="form-control" name="details[{{ $index }}][jumlah_beli]" value="{{ $detail->jumlah_beli }}" onchange="calculateSubtotal(this)" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-2">
                                                         <div class="form-group">
                                                             <label>Harga</label>
-                                                            <input class="form-control" name="harga_beli" value="{{ $detail->harga_beli }}" onchange="calculateSubtotal(this)" required>
+                                                            <input type="number" class="form-control" name="details[{{ $index }}][harga_beli]" value="{{ $detail->harga_beli }}" onchange="calculateSubtotal(this)" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-2">
                                                         <div class="form-group">
                                                             <label>Subtotal</label>
-                                                            <input type="number" class="form-control" name="subtotal" value="{{ $detail->subtotal }}" readonly>
+                                                            <input type="number" class="form-control" name="details[{{ $index }}][subtotal]" value="{{ $detail->subtotal }}" readonly>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-1 d-flex align-items-end">
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeDetailForm(this)" {{ count($detail_pembelians) > 1 ? '' : 'style="display:none;"' }}>
+                                                            <i class="ti-trash"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -107,31 +112,63 @@
 </div>
 
 <script>
-let detailCount = 1;
+let detailCount = {{ count($detail_pembelians) }};
 
 function addDetailForm() {
-    const template = document.querySelector('.detail-form').cloneNode(true);
-    const inputs = template.querySelectorAll('input, select');
+    // Create a new detail form template
+    const template = document.createElement('div');
+    template.className = 'detail-form mb-4';
+    template.innerHTML = `
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Obat</label>
+                    <select class="form-select form-control rounded-3 custom-select" name="details[${detailCount}][id_obat]" required>
+                        <option value="">Pilih Obat</option>
+                        @foreach($obats as $obat)
+                            <option value="{{ $obat->id }}">{{ $obat->nama_obat }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Jumlah</label>
+                    <input type="number" class="form-control" name="details[${detailCount}][jumlah_beli]" onchange="calculateSubtotal(this)" required>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Harga</label>
+                    <input type="number" class="form-control" name="details[${detailCount}][harga_beli]" onchange="calculateSubtotal(this)" required>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Subtotal</label>
+                    <input type="number" class="form-control" name="details[${detailCount}][subtotal]" readonly>
+                </div>
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeDetailForm(this)">
+                    <i class="ti-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
     
-    inputs.forEach(input => {
-        const name = input.getAttribute('name');
-        if (name) {
-            input.setAttribute('name', name.replace('[0]', `[${detailCount}]`));
-        }
-        if (input.type !== 'button') {
-            input.value = '';
-        }
-    });
-    
-    template.querySelector('.btn-danger').style.display = 'block';
     document.getElementById('detail-forms').appendChild(template);
     detailCount++;
+    
+    // Show remove buttons if there are more than 1 detail forms
+    updateRemoveButtons();
 }
 
 function removeDetailForm(button) {
     const formDiv = button.closest('.detail-form');
     formDiv.remove();
     updateTotal();
+    updateRemoveButtons();
 }
 
 function calculateSubtotal(input) {
@@ -148,5 +185,25 @@ function updateTotal() {
     const total = subtotals.reduce((sum, current) => sum + current, 0);
     document.querySelector('[name="total_bayar"]').value = total;
 }
+
+function updateRemoveButtons() {
+    const detailForms = document.querySelectorAll('.detail-form');
+    const removeButtons = document.querySelectorAll('.detail-form .btn-danger');
+    
+    if (detailForms.length > 1) {
+        removeButtons.forEach(button => {
+            button.style.display = 'block';
+        });
+    } else {
+        removeButtons.forEach(button => {
+            button.style.display = 'none';
+        });
+    }
+}
+
+// Initialize remove buttons on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateRemoveButtons();
+});
 </script>
 @endsection

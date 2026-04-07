@@ -59,7 +59,7 @@
                                         <th scope="row" class="align-middle">{{ $loop->iteration }}</th>
                                         <td class="align-middle">{{ $pembelian->no_nota }}</td>
                                         <td class="align-middle">{{ date('d/m/Y', strtotime($pembelian->tgl_pembelian)) }}</td>
-                                        <td class="align-middle">Rp {{ number_format($pembelian->total_bayar, 0, ',', '.') }}</td>
+                                        <td class="align-middle" data-total="{{ $pembelian->id }}">Rp {{ number_format($pembelian->total_bayar, 0, ',', '.') }}</td>
                                         <td class="align-middle">{{ $pembelian->distributor->nama_distributor }}</td>
                                         <td class="align-middle">
                                         </td>
@@ -150,6 +150,34 @@
         });
     });
 
+    // Function to recalculate total for each pembelian
+    function recalculateTotals() {
+        @foreach($pembelians as $pembelian)
+            const subtotals{{ $pembelian->id }} = [
+                @foreach($pembelian->detail_pembelians as $detail)
+                    {{ $detail->subtotal }},
+                @endforeach
+            ];
+            const total{{ $pembelian->id }} = subtotals{{ $pembelian->id }}.reduce((sum, val) => sum + val, 0);
+            const totalCell{{ $pembelian->id }} = document.querySelector('[data-total="{{ $pembelian->id }}"]');
+            if (totalCell{{ $pembelian->id }}) {
+                totalCell{{ $pembelian->id }}.textContent = 'Rp ' + total{{ $pembelian->id }}.toLocaleString('id-ID');
+            }
+        @endforeach
+    }
+
+    // Soft refresh - check if data might have changed and reload if needed
+    let lastFocusTime = Date.now();
+    window.addEventListener('focus', function() {
+        const currentTime = Date.now();
+        // If more than 2 seconds have passed since last focus, likely user switched tabs/windows
+        // In that case, reload to get fresh data
+        if (currentTime - lastFocusTime > 2000) {
+            location.reload();
+        }
+        lastFocusTime = currentTime;
+    });
+
     // Search and filter functionality
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
@@ -173,6 +201,16 @@
 
         searchInput.addEventListener('input', filterTable);
         filterPembelian.addEventListener('change', filterTable);
+        
+        // Recalculate totals on page load
+        recalculateTotals();
+        
+        // Add listeners to modals to recalculate when opened
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function() {
+                recalculateTotals();
+            });
+        });
     });
 
     function addDetailForm() {

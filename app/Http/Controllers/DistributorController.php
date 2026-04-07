@@ -50,6 +50,16 @@ class DistributorController extends Controller
             ->with('success', 'Distributor berhasil diperbarui');
     }
 
+    public function updateDistributor(Request $request, $id)
+    {
+        return $this->update($request, $id);
+    }
+
+    public function destroyDistributor($id)
+    {
+        return $this->destroy($id);
+    }
+
     public function destroy($id)
     {
         $distributor = Distributor::findOrFail($id);
@@ -133,31 +143,59 @@ class DistributorController extends Controller
 
     public function updatePembelian(Request $request, $id)
     {
-        $pembelian = Pembelian::findOrFail($id);
+        try {
+            DB::beginTransaction();
 
-        $validated = $request->validate([
-            'no_nota' => 'required|unique:pembelians,no_nota,' . $id,
-            'tgl_pembelian' => 'required|date',
-            'total_bayar' => 'required|numeric',
-            'id_distributor' => 'required|exists:distributors,id'
-        ]);
+            $pembelian = Pembelian::findOrFail($id);
 
-        $pembelian->update($validated);
+            $validated = $request->validate([
+                'no_nota' => 'required|unique:pembelians,no_nota,' . $id,
+                'tgl_pembelian' => 'required|date',
+                'total_bayar' => 'required|numeric',
+                'id_distributor' => 'required|exists:distributors,id'
+            ]);
 
-        if ($request->has('detail_pembelians')) {
-            DetailPembelian::where('id_pembelian', $id)->delete();
-            foreach ($request->detail_pembelians as $detail) {
-                DetailPembelian::create([
-                    'id_pembelian' => $pembelian->id,
-                    'id_obat' => $detail['id_obat'],
-                    'jumlah_beli' => $detail['jumlah_beli'],
-                    'harga_beli' => $detail['harga_beli'],
-                    'subtotal' => $detail['jumlah_beli'] * $detail['harga_beli']
-                ]);
+            // Get old details for stock adjustment
+            $oldDetails = DetailPembelian::where('id_pembelian', $id)->get();
+
+            // Decrease stock for old quantities
+            foreach ($oldDetails as $oldDetail) {
+                $obat = Obat::find($oldDetail->id_obat);
+                if ($obat) {
+                    $obat->decrement('stok', $oldDetail->jumlah_beli);
+                }
             }
-        }
 
-        return redirect()->route('pembelian.index')->with('success', 'Pembelian berhasil diperbarui.');
+            $pembelian->update($validated);
+
+            // Delete old details
+            DetailPembelian::where('id_pembelian', $id)->delete();
+
+            // Create new details and update stock
+            if ($request->has('details')) {
+                foreach ($request->details as $detail) {
+                    DetailPembelian::create([
+                        'id_pembelian' => $pembelian->id,
+                        'id_obat' => $detail['id_obat'],
+                        'jumlah_beli' => $detail['jumlah_beli'],
+                        'harga_beli' => $detail['harga_beli'],
+                        'subtotal' => $detail['subtotal']
+                    ]);
+
+                    // Increase stock for new quantities
+                    $obat = Obat::find($detail['id_obat']);
+                    if ($obat) {
+                        $obat->increment('stok', $detail['jumlah_beli']);
+                    }
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('pembelian')->with('success', 'Pembelian berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function destroyPembelian($id)
@@ -185,48 +223,92 @@ class DistributorController extends Controller
 
     public function storeDetail(Request $request)
     {
-        $request->validate([
-            'id_pembelian' => 'required|exists:pembelians,id',
-            'id_obat' => 'required|exists:obats,id',
-            'jumlah_beli' => 'required|numeric|min:1',
-            'harga_beli' => 'required|numeric'
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $subtotal = $request->jumlah_beli * $request->harga_beli;
+            $request->validate([
+                'id_pembelian' => 'required|exists:pembelians,id',
+                'id_obat' => 'required|exists:obats,id',
+                'jumlah_beli' => 'required|numeric|min:1',
+                'harga_beli' => 'required|numeric'
+            ]);
 
-        DetailPembelian::create([
-            'id_obat' => $request->id_obat,
-            'jumlah_beli' => $request->jumlah_beli,
-            'harga_beli' => $request->harga_beli,
-            'subtotal' => $subtotal,
-            'id_pembelian' => $request->id_pembelian
-        ]);
+            $subtotal = $request->jumlah_beli * $request->harga_beli;
 
-        return redirect()->route('detailpembelian.index')->with('success', 'Detail pembelian berhasil ditambahkan');
+            DetailPembelian::create([
+                'id_obat' => $request->id_obat,
+                'jumlah_beli' => $request->jumlah_beli,
+                'harga_beli' => $request->harga_beli,
+                'subtotal' => $subtotal,
+                'id_pembelian' => $request->id_pembelian
+            ]);
+
+            // Update stock
+            $obat = Obat::find($request->id_obat);
+            if ($obat) {
+                $obat->increment('stok', $request->jumlah_beli);
+            }
+
+            DB::commit();
+            return redirect()->route('detailpembelian.index')->with('success', 'Detail pembelian berhasil ditambahkan');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function updateDetail(Request $request, $id)
     {
-        $detail = DetailPembelian::findOrFail($id);
+        try {
+            DB::beginTransaction();
 
-        $validated = $request->validate([
-            'id_obat' => 'required|exists:obats,id',
-            'jumlah_beli' => 'required|numeric|min:1',
-            'harga_beli' => 'required|numeric',
-            'id_pembelian' => 'required|exists:pembelians,id'
-        ]);
+            $detail = DetailPembelian::findOrFail($id);
 
-        $validated['subtotal'] = $validated['jumlah_beli'] * $validated['harga_beli'];
+            $validated = $request->validate([
+                'id_obat' => 'required|exists:obats,id',
+                'jumlah_beli' => 'required|numeric|min:1',
+                'harga_beli' => 'required|numeric',
+                'id_pembelian' => 'required|exists:pembelians,id'
+            ]);
 
-        $detail->update($validated);
+            $validated['subtotal'] = $validated['jumlah_beli'] * $validated['harga_beli'];
 
-        return redirect()->route('detailpembelian.index')->with('success', 'Detail pembelian berhasil diperbarui');
+            // Handle stock adjustment if obat changed or quantity changed
+            if ($detail->id_obat != $validated['id_obat'] || $detail->jumlah_beli != $validated['jumlah_beli']) {
+                // Decrease stock for old obat/quantity
+                $oldObat = Obat::find($detail->id_obat);
+                if ($oldObat) {
+                    $oldObat->decrement('stok', $detail->jumlah_beli);
+                }
+
+                // Increase stock for new obat/quantity
+                $newObat = Obat::find($validated['id_obat']);
+                if ($newObat) {
+                    $newObat->increment('stok', $validated['jumlah_beli']);
+                }
+            }
+
+            $detail->update($validated);
+
+            DB::commit();
+            return redirect()->route('detailpembelian.index')->with('success', 'Detail pembelian berhasil diperbarui');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function destroyDetail($id)
     {
         try {
             $detailPembelian = DetailPembelian::findOrFail($id);
+
+            // Decrease stock when deleting detail
+            $obat = Obat::find($detailPembelian->id_obat);
+            if ($obat) {
+                $obat->decrement('stok', $detailPembelian->jumlah_beli);
+            }
+
             $detailPembelian->delete();
             return redirect()->route('detailpembelian.index')->with('success', 'Detail pembelian berhasil dihapus.');
         } catch (\Exception $e) {

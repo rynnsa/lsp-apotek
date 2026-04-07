@@ -169,7 +169,7 @@
                             <div class="card border-0 shadow-sm">
                                 <div class="card-header bg-white border-0 py-4">
                                     <h4 class="mb-0 text-dark">
-                                        <i class="fas fa-bolt text-warning mr-2"></i>Aksi Cepat
+                                        <i class="text-warning mr-2"></i>Aksi Cepat
                                     </h4>
                                 </div>
                                 <div class="card-body">
@@ -288,7 +288,7 @@
 
                                         @if(Auth::user()->jabatan == 'kasir')
                                         <div class="col-md-3 mb-3">
-                                            <a href="{{ route('metode-bayar') }}" class="text-decoration-none">
+                                            <a href="{{ route('metodebayar') }}" class="text-decoration-none">
                                                 <div class="action-card text-center p-4 border rounded-lg hover-shadow">
                                                     <div class="action-icon bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                                         <i class="fas fa-credit-card fa-lg"></i>

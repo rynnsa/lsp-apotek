@@ -117,8 +117,20 @@
                                                             </select>
                                                         </div>
                                                         <div class="mb-3">
+                                                            <label class="form-label">Harga Beli</label>
+                                                            <input type="number" class="form-control harga_beli_edit" name="harga_beli" value="{{ $obat->harga_beli ?? '' }}" onchange="hitungHargaJualEdit(this)" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Margin (%)</label>
+                                                            <input type="number" class="form-control margin_edit" name="margin" value="{{ $obat->margin ?? 20 }}" onchange="hitungHargaJualEdit(this)" required>
+                                                        </div>
+                                                        <div class="mb-3">
                                                             <label class="form-label">Harga Jual</label>
-                                                            <input type="number" class="form-control" name="harga_jual" value="{{ $obat->harga_jual }}" required>
+                                                            <input type="number" class="form-control harga_jual_edit" name="harga_jual" value="{{ $obat->harga_jual }}" readonly required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Keuntungan (Rp)</label>
+                                                            <input type="number" class="form-control keuntungan_edit" name="keuntungan" readonly required>
                                                         </div>
                                                         <div class="mb-3">
                                                             <label class="form-label">Deskripsi Obat</label>
@@ -374,6 +386,18 @@
         
         document.getElementById('harga_jual_add').value = Math.round(hargaJual);
         document.getElementById('keuntungan_add').value = Math.round(marginRupiah);
+    }
+
+    function hitungHargaJualEdit(element) {
+        const modal = element.closest('.modal-body');
+        const hargaBeli = parseFloat(modal.querySelector('.harga_beli_edit').value) || 0;
+        const marginPersen = parseFloat(modal.querySelector('.margin_edit').value) || 0;
+        
+        const marginRupiah = hargaBeli * (marginPersen / 100);
+        const hargaJual = hargaBeli + marginRupiah;
+        
+        modal.querySelector('.harga_jual_edit').value = Math.round(hargaJual);
+        modal.querySelector('.keuntungan_edit').value = Math.round(marginRupiah);
     }
 
     // Initialize calculation when page loads

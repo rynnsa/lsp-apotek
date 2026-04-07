@@ -139,7 +139,24 @@
                                     <p class="mb-0" style="font-size: 15px;">{{ $penjualan->kodepos_pengiriman ?? $penjualan->pelanggan->kodepos1 }}</p>
                                 </div>
                                 <div class="col-md-4">
-                                    @if($penjualan->courier)
+                                    @if(in_array($penjualan->status_order, ['Menunggu Kurir', 'Selesai']) && $penjualan->courier && $penjualan->pengiriman)
+                                        <p class="mb-1"><span class="text-muted fs-6">Kurir:</span></p>
+                                        <p class="mb-2"><strong style="font-size: 15px;">{{ strtoupper($penjualan->courier) }} - {{ $penjualan->pengiriman->nama_kurir }}</strong></p>
+                                        
+                                        <p class="mb-1"><span class="text-muted fs-6">No. Telepon:</span></p>
+                                        <p class="mb-2" style="font-size: 15px;">{{ $penjualan->pengiriman->telpon_kurir }}</p>
+                                        
+                                        @if($penjualan->status_order == 'Selesai' && $penjualan->pengiriman->bukti_foto)
+                                            <p class="mb-1"><span class="text-muted fs-6">Bukti Foto:</span></p>
+                                            <img src="{{ asset('storage/' . $penjualan->pengiriman->bukti_foto) }}" alt="Bukti Pengiriman" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                        @endif
+                                    @elseif(in_array($penjualan->status_order, ['Menunggu Konfirmasi ', 'Diproses']) && $penjualan->pengiriman)
+                                        <p class="mb-1"><span class="text-muted fs-6">Kurir:</span></p>
+                                        <p class="mb-2"><strong style="font-size: 15px;">{{ $penjualan->pengiriman->nama_kurir }}</strong></p>
+                                        
+                                        <p class="mb-1"><span class="text-muted fs-6">No. Telepon:</span></p>
+                                        <p class="mb-2" style="font-size: 15px;">{{ $penjualan->pengiriman->telpon_kurir }}</p>
+                                    @elseif($penjualan->courier)
                                         <p class="mb-1"><span class="text-muted fs-6">Kurir:</span></p>
                                         <p class="mb-2"><strong style="font-size: 15px;">{{ strtoupper($penjualan->courier) }}</strong></p>
                                     @endif

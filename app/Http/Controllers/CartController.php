@@ -307,6 +307,7 @@ class CartController extends Controller
             'metodeBayar' => MetodeBayar::all(),
             'userAddresses' => $userAddresses,
             'provinces' => $provinces,
+            'requiresPrescription' => false, // TODO: Calculate based on items
         ]);
     }
 

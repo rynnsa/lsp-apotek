@@ -276,7 +276,7 @@
                                 </a>
                                 <ul class="pcoded-submenu">
                                     <li class="{{ Request::is('metode-bayar*') ? 'active' : '' }}">
-                                        <a href="metode-bayar">
+                                        <a href="{{ route('metodebayar') }}">
                                             <span class="pcoded-micon"><i class="ti-user"></i></span>
                                             <span class="pcoded-mtext">Metode Bayar</span>
                                             <span class="pcoded-mcaret"></span>

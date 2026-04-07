@@ -196,7 +196,7 @@
                                         <div class="col-md-12">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <p class="mb-0 text-dark">Kurir/Pengiriman</p>
-                                                <select class="form-select w-50" id="shipping" name="shipping" onchange="calculateTotal()">
+                                                <select class="form-select w-50" id="shipping" name="shipping" onchange="calculateShipping()">
                                                     <option value="">Pilih Kurir</option>
                                                     <option value="jne">JNE</option>
                                                     <option value="pos">POS Indonesia</option>
@@ -299,6 +299,7 @@
 // Store user addresses and province data
 const userAddresses = @json($userAddresses);
 const provincesData = @json($provinces);
+const jenisPengirimanData = @json($jenisPengiriman);
 const requiresPrescription = @json($requiresPrescription);
 
 // Simple province matching function
@@ -440,6 +441,11 @@ function loadDistricts() {
             html += `<option value="${districtId}">${districtName}</option>`;
         });
         districtSelect.innerHTML = html;
+
+        // Auto-calculate shipping if courier is selected
+        if (document.getElementById('shipping').value) {
+            calculateShipping();
+        }
     })
     .catch(error => {
         console.error('Error loading districts:', error);
@@ -464,7 +470,7 @@ function calculateShipping() {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
         body: new URLSearchParams({
-            origin: 151,  // Jakarta Barat (ID kecamatan valid)
+            origin: 3855,  // Diwek (ID kecamatan valid asal)
             destination: districtId,
             weight: weight,
             courier: courier
@@ -474,28 +480,58 @@ function calculateShipping() {
     .then(data => {
         console.log('Shipping data:', data); // Debug log
         let html = '<option value="">Pilih Paket</option>';
+        let hasPackages = false;
+        
         if (data && data.length > 0) {
-            data.forEach(courier => {
-                if (courier.costs && courier.costs.length > 0) {
-                    courier.costs.forEach(cost => {
+            data.forEach(courierData => {
+                if (courierData.costs && courierData.costs.length > 0) {
+                    courierData.costs.forEach(cost => {
                         const service = cost.service;
                         const description = cost.description;
                         const costValue = cost.cost[0].value;
                         const etd = cost.cost[0].etd;
-                        html += `<option value="${service}|${costValue}">${courier.name} ${service} (${description}) - Rp ${costValue.toLocaleString('id-ID')} (${etd} hari)</option>`;
+                        html += `<option value="${service}|${costValue}">${courierData.name} ${service} (${description}) - Rp ${costValue.toLocaleString('id-ID')} (${etd} hari)</option>`;
+                        hasPackages = true;
                     });
                 }
             });
         }
-        if (html === '<option value="">Pilih Paket</option>') {
-            html = '<option value="">Tidak ada paket tersedia</option>';
+        
+        // Paket standar - Manual atau dari jenis pengiriman
+        if (!hasPackages) {
+            html = '<option value="">Pilih Paket</option>';
+            
+            // Gunakan data jenis pengiriman sebagai fallback
+            if (jenisPengirimanData && jenisPengirimanData.length > 0) {
+                jenisPengirimanData.forEach(jenis => {
+                    const ongkos = jenis.ongkos_kirim || 0;
+                    html += `<option value="${jenis.jenis_kirim}|${ongkos}">${jenis.nama_expedisi} ${jenis.jenis_kirim} - Rp ${ongkos.toLocaleString('id-ID')} (2-3 hari)</option>`;
+                });
+            } else {
+                // Fallback manual jika tidak ada data jenis pengiriman
+                html += `<option value="Standar|50000">Standar (Manual) - Rp 50.000 (3-5 hari)</option>`;
+            }
         }
+        
         document.getElementById('shipping-package').innerHTML = html;
         calculateTotal();
     })
     .catch(error => {
         console.error('Error calculating shipping:', error);
-        document.getElementById('shipping-package').innerHTML = '<option value="">Error - coba lagi</option>';
+        // Tampilkan paket dari jenis pengiriman jika ada error
+        let html = '<option value="">Pilih Paket</option>';
+        
+        if (jenisPengirimanData && jenisPengirimanData.length > 0) {
+            jenisPengirimanData.forEach(jenis => {
+                const ongkos = jenis.ongkos_kirim || 0;
+                html += `<option value="${jenis.jenis_kirim}|${ongkos}">${jenis.nama_expedisi} ${jenis.jenis_kirim} - Rp ${ongkos.toLocaleString('id-ID')} (2-3 hari)</option>`;
+            });
+        } else {
+            // Fallback manual jika tidak ada data jenis pengiriman
+            html += `<option value="Standar|50000">Standar (Manual) - Rp 50.000 (3-5 hari)</option>`;
+        }
+        
+        document.getElementById('shipping-package').innerHTML = html;
     });
 }
 
@@ -718,8 +754,4 @@ function createOrder(event) {
     });
 }
 </script>
-    </body>
-
-</html>
-@yield('footer')
 @endsection

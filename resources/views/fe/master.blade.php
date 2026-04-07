@@ -11,9 +11,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://app.sandbook.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-040frXUDx1APexFY"></script>
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-040frXUDx1APexFY"></script>
 
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

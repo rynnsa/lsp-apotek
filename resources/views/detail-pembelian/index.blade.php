@@ -95,16 +95,11 @@
                                                         <div class="mb-3">
                                                             <label class="form-label">Obat</label>
                                                             <select class="form-select form-control rounded-3 custom-select" name="id_obat" required>
-                                                                @php
-                                                                    $addedObats = [];
-                                                                @endphp
+                                                                <option value="">Pilih obat</option>
                                                                 @foreach($obats as $obat)
-                                                                    @if(!in_array($obat->nama_obat, $addedObats))
-                                                                        <option value="{{ $obat->nama_obat }}">{{ $obat->nama_obat }}</option>
-                                                                        @php
-                                                                            $addedObats[] = $obat->nama_obat;
-                                                                        @endphp
-                                                                    @endif
+                                                                    <option value="{{ $obat->id }}" {{ $detail_pembelian->id_obat == $obat->id ? 'selected' : '' }}>
+                                                                        {{ $obat->nama_obat }}
+                                                                    </option>
                                                                 @endforeach
                                                             </select>
                                                         </div>

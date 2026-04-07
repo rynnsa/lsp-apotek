@@ -73,4 +73,9 @@ class Penjualan extends Model
         return $this->belongsTo(JenisPengiriman::class, 'id_jenis_kirim');
     }
 
+    public function pengiriman()
+    {
+        return $this->hasOne(Pengiriman::class, 'id_penjualan');
+    }
+
 }

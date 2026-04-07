@@ -83,7 +83,7 @@
                                         </td>
                                         <td>
                                             <div class="dropdown d-inline rounded-pill">
-                                                 <select class="form-select form-control rounded-3 custom-select rounded-pill" onchange="updateStatus({{ $penjualan->id }}, this.value)">
+                                                <select class="form-select form-control rounded-3 custom-select rounded-pill" onchange="confirmStatusChange(this, {{ $penjualan->id }}, @json($penjualan->status_order))">
                                                     <option value="Menunggu Konfirmasi" {{ $penjualan->status_order == 'Menunggu Konfirmasi' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
                                                     <option value="Diproses" {{ $penjualan->status_order == 'Diproses' ? 'selected' : '' }}>Diproses</option>
                                                     <option value="Menunggu Kurir" {{ $penjualan->status_order == 'Menunggu Kurir' ? 'selected' : '' }}>Menunggu Kurir</option>
@@ -255,11 +255,26 @@ function numberFormat(number) {
     return new Intl.NumberFormat('id-ID').format(number);
 }
 
-function updateStatus(id, status) {
-    if (!confirm('Apakah Anda yakin ingin mengubah status menjadi ' + status + '?')) {
-        return;
-    }
+function confirmStatusChange(select, id, oldStatus) {
+    const newStatus = select.value;
 
+    Swal.fire({
+        title: 'Ubah status pesanan?',
+        text: `Apakah Anda yakin ingin mengubah status menjadi "${newStatus}"?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, ubah',
+        cancelButtonText: 'Batal',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateStatus(id, newStatus, select, oldStatus);
+        } else {
+            select.value = oldStatus;
+        }
+    });
+}
+
+function updateStatus(id, status, select, oldStatus) {
     fetch(`/penjualan/update-status/${id}`, {
         method: 'POST',
         headers: {
@@ -271,14 +286,24 @@ function updateStatus(id, status) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.location.reload();
+            Swal.fire({
+                title: 'Berhasil',
+                text: 'Status penjualan berhasil diperbarui.',
+                icon: 'success',
+                timer: 1200,
+                showConfirmButton: false,
+            }).then(() => {
+                window.location.reload();
+            });
         } else {
-            alert('Gagal mengubah status: ' + data.message);
+            select.value = oldStatus;
+            Swal.fire('Gagal', 'Gagal mengubah status: ' + data.message, 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Terjadi kesalahan saat mengubah status');
+        select.value = oldStatus;
+        Swal.fire('Terjadi Kesalahan', 'Tidak dapat mengubah status saat ini.', 'error');
     });
 }
 </script>

@@ -22,11 +22,13 @@
                             <h4 class="mb-0">Kelola Pengiriman</h4>
                         </div>
                        
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="#" class="btn btn-primary text-white rounded-pill" data-bs-toggle="modal" data-bs-target="#tambahPengirimanModal">
-                                Tambah +
-                            </a>
-                        </div>
+                        {{-- <div class="d-flex justify-content-end gap-2">
+                            @if(Auth::user()->jabatan !== 'karyawan')
+                                <a href="#" class="btn btn-primary text-white rounded-pill" data-bs-toggle="modal" data-bs-target="#tambahPengirimanModal">
+                                    Tambah +
+                                </a>
+                            @endif
+                        </div> --}}
                     </div>
                     
                     <div class="card-block">

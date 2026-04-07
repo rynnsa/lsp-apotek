@@ -70,7 +70,7 @@
                                         <td class="align-middle">
                                             <button class="btn btn-success btn-sm ti-pencil" data-bs-toggle="modal" data-bs-target="#editModal{{$user->id}}">
                                             </button>
-                                            <form action="{{ route('kelola-pengguna.destroy', $user->id) }}" method="POST" class="delete-user-form d-inline" data-user-name="{{ $user->name }}">
+                                            <form action="{{ route('kelola-pengguna.destroy', $user->id) }}" method="POST" class="delete-form d-inline" data-item-name="{{ $user->name }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm ti-trash">
@@ -191,6 +191,7 @@
     </div>
 </div>
 
+
 <!-- Confirm Delete Modal -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -240,15 +241,7 @@
         const searchInput = document.getElementById('searchInput');
         const filterJabatan = document.getElementById('filterJabatan');
         const tableRows = document.querySelectorAll('tbody tr');
-        const deleteForms = document.querySelectorAll('.delete-user-form');
-        const editForms = document.querySelectorAll('.edit-user-form');
-        let currentDeleteForm = null;
-        let currentEditForm = null;
-
-        const confirmDeleteModalEl = document.getElementById('confirmDeleteModal');
-        const confirmEditModalEl = document.getElementById('confirmEditModal');
-        const confirmDeleteModal = new bootstrap.Modal(confirmDeleteModalEl);
-        const confirmEditModal = new bootstrap.Modal(confirmEditModalEl);
+        const deleteForms = document.querySelectorAll('.delete-form');
 
         function filterTable() {
             const searchTerm = searchInput.value.toLowerCase();
@@ -266,36 +259,27 @@
             });
         }
 
+        // SweetAlert2 Delete Confirmation
         deleteForms.forEach(form => {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                currentDeleteForm = form;
-                const username = form.dataset.userName || 'pengguna ini';
-                document.getElementById('deleteTargetName').textContent = username;
-                confirmDeleteModal.show();
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = this.getAttribute('data-item-name');
+                
+                Swal.fire({
+                    title: 'Hapus Pengguna?',
+                    html: `<span class="text-dark">Apakah Anda yakin ingin menghapus pengguna <strong>${itemName}</strong>?</span>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
             });
-        });
-
-        editForms.forEach(form => {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                currentEditForm = form;
-                const username = form.dataset.userName || 'pengguna ini';
-                document.getElementById('editTargetName').textContent = username;
-                confirmEditModal.show();
-            });
-        });
-
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-            if (currentDeleteForm) {
-                currentDeleteForm.submit();
-            }
-        });
-
-        document.getElementById('confirmEditBtn').addEventListener('click', function() {
-            if (currentEditForm) {
-                currentEditForm.submit();
-            }
         });
 
         searchInput.addEventListener('input', filterTable);

@@ -115,7 +115,8 @@ class PenjualanController extends Controller
         $penjualan = Penjualan::with([
                 'detail_penjualans.obat',
                 'metode_bayar',
-                'jenis_pengiriman'
+                'jenis_pengiriman',
+                'pengiriman'
             ])
             ->where('id_pelanggan', $user->id)
             ->latest('created_at') // This will order by created_at DESC
